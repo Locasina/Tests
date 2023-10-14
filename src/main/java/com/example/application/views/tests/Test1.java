@@ -1,0 +1,52 @@
+package com.example.application.views.tests;
+
+import com.example.application.views.MainLayout;
+import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dependency.Uses;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
+import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+
+@PageTitle("test1")
+@Route(value = "test1", layout = MainLayout.class)
+public class Test1 extends Composite<VerticalLayout> {
+    public Test1() {
+        H1 h1 = new H1();
+        RadioButtonGroup radioGroup = new RadioButtonGroup();
+        HorizontalLayout layoutRow = new HorizontalLayout();
+        Button buttonPrimary = new Button();
+        Button buttonPrimary2 = new Button();
+        HorizontalLayout layoutRow2 = new HorizontalLayout();
+        getContent().setHeightFull();
+        getContent().setWidthFull();
+        h1.setText("1/15");
+        radioGroup.setLabel("Radio Group");
+        radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
+        radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+        layoutRow.setWidthFull();
+        getContent().setFlexGrow(1.0, layoutRow);
+        layoutRow.addClassName(Gap.MEDIUM);
+        buttonPrimary.setText("next");
+        buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        buttonPrimary2.setText("не некст");
+        buttonPrimary2.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        layoutRow2.setWidthFull();
+        getContent().setFlexGrow(1.0, layoutRow2);
+        layoutRow2.addClassName(Gap.MEDIUM);
+        getContent().add(h1);
+        getContent().add(radioGroup);
+        getContent().add(layoutRow);
+        layoutRow.add(buttonPrimary);
+        layoutRow.add(buttonPrimary2);
+        getContent().add(layoutRow2);
+    }
+
+}

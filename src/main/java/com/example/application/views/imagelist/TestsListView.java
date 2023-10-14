@@ -3,6 +3,7 @@ package com.example.application.views.imagelist;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
+import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.OrderedList;
@@ -31,10 +32,10 @@ public class TestsListView extends Main implements HasComponents, HasStyle {
 
     public TestsListView() {
         constructUI();
-        testCardContainer.add(new TestListViewCard("Economy Test 1"));
-        testCardContainer.add(new TestListViewCard("Economy Test 2"));
-        testCardContainer.add(new TestListViewCard("Java Test 1"));
-        testCardContainer.add(new TestListViewCard("Java Test 2"));
+        testCardContainer.add(new TestListViewCard("Economy Test 1","Economy Test 1","Economy Test 1"));
+        testCardContainer.add(new TestListViewCard("Economy Test 2", "Economy Test 2", "Economy Test 1"));
+        testCardContainer.add(new TestListViewCard("Java Test 1", "Java Test 1", "Economy Test 1"));
+        testCardContainer.add(new TestListViewCard("Java Test 2", "Java Test 2", "Economy Test 1"));
     }
 
     private void constructUI() {
