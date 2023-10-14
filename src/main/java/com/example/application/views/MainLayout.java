@@ -1,9 +1,9 @@
 package com.example.application.views;
 
-import com.example.application.views.about.AboutView;
+import  com.example.application.views.about.AboutView;
 import com.example.application.views.gridwithfilters.GridwithFiltersView;
 import com.example.application.views.helloworld.HelloWorldView;
-import com.example.application.views.imagelist.ImageListView;
+import com.example.application.views.imagelist.TestsListView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.Footer;
@@ -55,7 +55,7 @@ public class MainLayout extends AppLayout {
 
         nav.addItem(new SideNavItem("Hello World", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
         nav.addItem(new SideNavItem("About", AboutView.class, LineAwesomeIcon.FILE.create()));
-        nav.addItem(new SideNavItem("Image List", ImageListView.class, LineAwesomeIcon.TH_LIST_SOLID.create()));
+        nav.addItem(new SideNavItem("Test List", TestsListView.class, LineAwesomeIcon.TH_LIST_SOLID.create()));
         nav.addItem(
                 new SideNavItem("Grid with Filters", GridwithFiltersView.class, LineAwesomeIcon.FILTER_SOLID.create()));
 
