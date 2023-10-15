@@ -22,20 +22,15 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 
 public class TestListViewCard extends ListItem {
-    boolean fl = false;
 
-
-    public void BeforeLeaveEvent(BeforeEnterEvent beforeEnterEvent) {
-        if(fl)
-            beforeEnterEvent.forwardTo(Test1.class);
-    }
-
-
-    public TestListViewCard(String text, String title, String subTitle) {
+    public TestListViewCard(String text, String title, String subTitle, String testID) {
         addClassNames(Background.CONTRAST_5, Display.FLEX, FlexDirection.COLUMN, AlignItems.START, Padding.MEDIUM,
                 BorderRadius.LARGE);
 
-
+        addClickListener(e ->
+                getUI().ifPresent(ui ->
+                        ui.navigate(testID))
+        );
 
         Span header = new Span();
         header.addClassNames(FontSize.XLARGE, FontWeight.SEMIBOLD);
@@ -51,14 +46,14 @@ public class TestListViewCard extends ListItem {
         Span badge = new Span();
         badge.getElement().setAttribute("theme", "badge");
         badge.setText("Pass");
-        Span button = new Span("Go");
-        button.getElement().setAttribute("theme", "button");
-        button.addClickListener(e ->
-                button.getUI().ifPresent(ui ->
-                        ui.navigate("test1"))
-        );
 
-        add( header, subtitle, description, badge, button);
+//        Span button = new Span("Go");
+//        button.addClickListener(e ->
+//                button.getUI().ifPresent(ui ->
+//                        ui.navigate(testID))
+//        );
+
+        add( header, subtitle, description, badge);
 
     }
 }
