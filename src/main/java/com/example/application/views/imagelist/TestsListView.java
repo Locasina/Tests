@@ -32,10 +32,10 @@ public class TestsListView extends Main implements HasComponents, HasStyle {
 
     public TestsListView() {
         constructUI();
-        testCardContainer.add(new TestListViewCard("Economy Test 1","Economy Test 1","Economy Test 1", "test1"));
-        testCardContainer.add(new TestListViewCard("Economy Test 2", "Economy Test 2", "Economy Test 1", "test2"));
-        testCardContainer.add(new TestListViewCard("Java Test 1", "Java Test 1", "Economy Test 1", "test3"));
-        testCardContainer.add(new TestListViewCard("Java Test 2", "Java Test 2", "Economy Test 1", "test4"));
+        testCardContainer.add(new TestListViewCard("Economy Test 1","Economy Test 1","Economy Test 1", "test1", 0));
+        testCardContainer.add(new TestListViewCard("Economy Test 2", "Economy Test 2", "Economy Test 1", "test2",0));
+        testCardContainer.add(new TestListViewCard("Java Test 1", "Java Test 1", "Economy Test 1", "test3", 2));
+        testCardContainer.add(new TestListViewCard("Java Test 2", "Java Test 2", "Economy Test 1", "test4", 1));
     }
 
     private void constructUI() {

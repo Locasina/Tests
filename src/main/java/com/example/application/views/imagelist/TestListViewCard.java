@@ -23,7 +23,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 
 public class TestListViewCard extends ListItem {
 
-    public TestListViewCard(String text, String title, String subTitle, String testID) {
+    public TestListViewCard(String text, String title, String subTitle, String testID, int state) {
         addClassNames(Background.CONTRAST_5, Display.FLEX, FlexDirection.COLUMN, AlignItems.START, Padding.MEDIUM,
                 BorderRadius.LARGE);
 
@@ -44,8 +44,21 @@ public class TestListViewCard extends ListItem {
         description.addClassName(Margin.Vertical.MEDIUM);
 
         Span badge = new Span();
-        badge.getElement().setAttribute("theme", "badge");
-        badge.setText("Pass");
+
+        if(state == 0 ) {
+            badge.getElement().setAttribute("theme", "badge");
+            badge.setText("Not passed");
+        }
+        else if(state == 1) {
+            badge.setText("Confirmed");
+            badge.getElement().getThemeList().add("badge success");
+        } else if (state == 2) {
+            badge.setText("in progress");
+            badge.getElement().getThemeList().add("badge contrast");
+        } else {
+            badge.getElement().setAttribute("theme", "badge");
+            badge.setText("Passed");
+        }
 
 //        Span button = new Span("Go");
 //        button.addClickListener(e ->
