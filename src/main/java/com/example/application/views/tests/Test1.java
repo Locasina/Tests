@@ -1,6 +1,8 @@
 package com.example.application.views.tests;
 
 import com.example.application.views.MainLayout;
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -18,6 +20,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 @PageTitle("test1")
 @Route(value = "test1", layout = MainLayout.class)
 public class Test1 extends Composite<VerticalLayout> {
+    static int i = 1;
     public Test1() {
         H1 h1 = new H1();
         RadioButtonGroup radioGroup = new RadioButtonGroup();
@@ -27,7 +30,7 @@ public class Test1 extends Composite<VerticalLayout> {
         HorizontalLayout layoutRow2 = new HorizontalLayout();
         getContent().setHeightFull();
         getContent().setWidthFull();
-        h1.setText("1/15");
+        h1.setText(i + "/15");
         radioGroup.setLabel("Radio Group");
         radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
         radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
@@ -47,6 +50,14 @@ public class Test1 extends Composite<VerticalLayout> {
         layoutRow.add(buttonPrimary);
         layoutRow.add(buttonPrimary2);
         getContent().add(layoutRow2);
+
+        buttonPrimary.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                i++;
+                h1.setText(i + "/15");
+            }
+        });
     }
 
 }
