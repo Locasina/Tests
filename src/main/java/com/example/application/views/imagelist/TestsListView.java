@@ -21,9 +21,11 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.MaxWidth;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
+import jakarta.annotation.security.PermitAll;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
+@PermitAll
 @PageTitle("Tests List")
 @Route(value = "tests-list", layout = MainLayout.class)
 public class TestsListView extends Main implements HasComponents, HasStyle {

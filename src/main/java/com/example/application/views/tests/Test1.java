@@ -16,8 +16,10 @@ import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+import jakarta.annotation.security.PermitAll;
 
 @PageTitle("test1")
+@PermitAll
 @Route(value = "test1", layout = MainLayout.class)
 public class Test1 extends Composite<VerticalLayout> {
     static int i = 1;
