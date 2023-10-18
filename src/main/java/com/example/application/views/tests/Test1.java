@@ -25,11 +25,11 @@ public class Test1 extends Composite<VerticalLayout> {
     static int i = 1;
     static int numberOfQ = 15;
 
-    private void nextQuation(RadioButtonGroup radioGroup){
+    private void nextQuestion(RadioButtonGroup radioGroup){
         radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
     }
 
-    private void previosQuation(RadioButtonGroup radioGroup){
+    private void previousQuestion(RadioButtonGroup radioGroup){
         radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
     }
 
@@ -70,7 +70,7 @@ public class Test1 extends Composite<VerticalLayout> {
             public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
                 if (i < numberOfQ) {
                     i++;
-                    nextQuation(radioGroup);
+                    nextQuestion(radioGroup);
                 }
                 h1.setText(i + "/" + numberOfQ);
             }
@@ -80,7 +80,7 @@ public class Test1 extends Composite<VerticalLayout> {
             public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
                 if (i>1) {
                     i--;
-                    previosQuation(radioGroup);;
+                    previousQuestion(radioGroup);;
                 }
                 h1.setText(i + "/" + numberOfQ);
             }
