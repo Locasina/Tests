@@ -24,7 +24,18 @@ import jakarta.annotation.security.PermitAll;
 public class Test1 extends Composite<VerticalLayout> {
     static int i = 1;
     static int numberOfQ = 15;
+
+    private void nextQuation(RadioButtonGroup radioGroup){
+        radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
+    }
+
+    private void previosQuation(RadioButtonGroup radioGroup){
+        radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
+    }
+
     public Test1() {
+
+
         H1 h1 = new H1();
         RadioButtonGroup radioGroup = new RadioButtonGroup();
         HorizontalLayout layoutRow = new HorizontalLayout();
@@ -57,8 +68,10 @@ public class Test1 extends Composite<VerticalLayout> {
         buttonPrimary.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
-                if (i< numberOfQ)
+                if (i < numberOfQ) {
                     i++;
+                    nextQuation(radioGroup);
+                }
                 h1.setText(i + "/" + numberOfQ);
             }
         });
@@ -67,6 +80,7 @@ public class Test1 extends Composite<VerticalLayout> {
             public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
                 if (i>1) {
                     i--;
+                    previosQuation(radioGroup);;
                 }
                 h1.setText(i + "/" + numberOfQ);
             }
