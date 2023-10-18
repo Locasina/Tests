@@ -23,6 +23,7 @@ import jakarta.annotation.security.PermitAll;
 @Route(value = "test1", layout = MainLayout.class)
 public class Test1 extends Composite<VerticalLayout> {
     static int i = 1;
+    static int numberOfQ = 15;
     public Test1() {
         H1 h1 = new H1();
         RadioButtonGroup radioGroup = new RadioButtonGroup();
@@ -56,8 +57,18 @@ public class Test1 extends Composite<VerticalLayout> {
         buttonPrimary.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
-                i++;
-                h1.setText(i + "/15");
+                if (i< numberOfQ)
+                    i++;
+                h1.setText(i + "/" + numberOfQ);
+            }
+        });
+        buttonPrimary2.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                if (i>1) {
+                    i--;
+                }
+                h1.setText(i + "/" + numberOfQ);
             }
         });
     }
