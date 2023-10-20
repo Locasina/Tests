@@ -18,20 +18,19 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @PageTitle("test1")
 @PermitAll
 @Route(value = "test1", layout = MainLayout.class)
 public class Test1 extends Composite<VerticalLayout> {
+
+    Map <Integer, String> chosenOptions = new HashMap<>();
+    static String option;
     static int i = 1;
     static int numberOfQ = 15;
 
-    private void nextQuestion(RadioButtonGroup radioGroup){
-        radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
-    }
-
-    private void previousQuestion(RadioButtonGroup radioGroup){
-        radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
-    }
 
     public Test1() {
 
@@ -39,11 +38,13 @@ public class Test1 extends Composite<VerticalLayout> {
         H1 h1 = new H1();
         RadioButtonGroup radioGroup = new RadioButtonGroup();
         HorizontalLayout layoutRow = new HorizontalLayout();
-        Button buttonPrimary = new Button();
-        Button buttonPrimary2 = new Button();
+        Button nextButton = new Button();
+        Button previousButton = new Button();
         HorizontalLayout layoutRow2 = new HorizontalLayout();
+
         getContent().setHeightFull();
         getContent().setWidthFull();
+
         h1.setText(i + "/15");
         radioGroup.setLabel("Radio Group");
         radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
@@ -51,40 +52,61 @@ public class Test1 extends Composite<VerticalLayout> {
         layoutRow.setWidthFull();
         getContent().setFlexGrow(1.0, layoutRow);
         layoutRow.addClassName(Gap.MEDIUM);
-        buttonPrimary.setText("next");
-        buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonPrimary2.setText("не некст");
-        buttonPrimary2.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        nextButton.setText("next");
+        nextButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        previousButton.setText("previous");
+        previousButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         layoutRow2.setWidthFull();
         getContent().setFlexGrow(1.0, layoutRow2);
         layoutRow2.addClassName(Gap.MEDIUM);
+
         getContent().add(h1);
         getContent().add(radioGroup);
         getContent().add(layoutRow);
-        layoutRow.add(buttonPrimary);
-        layoutRow.add(buttonPrimary2);
+        layoutRow.add(nextButton);
+        layoutRow.add(previousButton);
         getContent().add(layoutRow2);
+        radioGroup.addValueChangeListener(event -> {
+            if(event.getValue()!= null){
+                option = (String) event.getValue();
+            }
 
-        buttonPrimary.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
-            @Override
-            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
-                if (i < numberOfQ) {
-                    i++;
-                    nextQuestion(radioGroup);
-                }
-                h1.setText(i + "/" + numberOfQ);
-            }
         });
-        buttonPrimary2.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
-            @Override
-            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
-                if (i>1) {
-                    i--;
-                    previousQuestion(radioGroup);;
-                }
-                h1.setText(i + "/" + numberOfQ);
+
+
+        nextButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
+            if (i < numberOfQ) {
+                chosenOptions.put(i, option);
+                i++;
+
+                nextQuestion(radioGroup);
             }
+            h1.setText(i + "/" + numberOfQ);
         });
+        previousButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
+            if (i>1) {
+                i--;
+                previousQuestion(radioGroup);;
+            }
+            h1.setText(i + "/" + numberOfQ);
+        });
+    }
+    private void nextQuestion(RadioButtonGroup radioGroup){
+        radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
+        choiceNotifier(radioGroup);
+    }
+
+    private void previousQuestion(RadioButtonGroup radioGroup){
+        radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
+        System.out.println(radioGroup);
+        choiceNotifier(radioGroup);
+    }
+    private void choiceNotifier (RadioButtonGroup radioButtonGroup){
+        if(chosenOptions.get(i)!=null){
+            radioButtonGroup.setValue(chosenOptions.get(i));
+        }
+
     }
 
 }
