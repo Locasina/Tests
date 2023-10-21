@@ -67,6 +67,8 @@ public class Test1 extends Composite<VerticalLayout> {
         layoutRow.add(nextButton);
         layoutRow.add(previousButton);
         getContent().add(layoutRow2);
+
+
         radioGroup.addValueChangeListener(event -> {
             if(event.getValue()!= null){
                 option = (String) event.getValue();
@@ -77,17 +79,23 @@ public class Test1 extends Composite<VerticalLayout> {
 
         nextButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
             if (i < numberOfQ) {
-                chosenOptions.put(i, option);
+                if (option != null)
+                    chosenOptions.put(i, option);
                 i++;
 
                 nextQuestion(radioGroup);
+                option = null;
             }
             h1.setText(i + "/" + numberOfQ);
         });
+
         previousButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
             if (i>1) {
+                if (option != null)
+                    chosenOptions.put(i, option);
                 i--;
-                previousQuestion(radioGroup);;
+                previousQuestion(radioGroup);
+                option = null;
             }
             h1.setText(i + "/" + numberOfQ);
         });
@@ -99,8 +107,8 @@ public class Test1 extends Composite<VerticalLayout> {
 
     private void previousQuestion(RadioButtonGroup radioGroup){
         radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
-        System.out.println(radioGroup);
         choiceNotifier(radioGroup);
+
     }
     private void choiceNotifier (RadioButtonGroup radioButtonGroup){
         if(chosenOptions.get(i)!=null){
