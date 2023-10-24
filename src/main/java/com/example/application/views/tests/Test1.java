@@ -13,18 +13,32 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-@PageTitle("test1")
+@PageTitle("test")
 @PermitAll
-@Route(value = "test1", layout = MainLayout.class)
-public class Test1 extends Composite<VerticalLayout> {
+@Route(value = "test", layout = MainLayout.class)
+public class Test1 extends Composite<VerticalLayout> implements HasUrlParameter<String>{
+
+    static Map<String, List<String>> parametersMap;
+
+@Override
+    public void setParameter(BeforeEvent event,
+                             @OptionalParameter String parameter) {
+
+        Location location = event.getLocation();
+        QueryParameters queryParameters = location
+                .getQueryParameters();
+
+        parametersMap =
+                queryParameters.getParameters();
+    }
 
     Map <Integer, String> chosenOptions = new HashMap<>();
     static String option;
@@ -140,6 +154,7 @@ public class Test1 extends Composite<VerticalLayout> {
         radioGroup.setLabel(questions.get(i));
         radioGroup.setItems(tc.answers.get(i));
         choiceNotifier(radioGroup);
+        System.out.println(Test1.parametersMap);
     }
 
     private void previousQuestion(RadioButtonGroup radioGroup){

@@ -7,9 +7,7 @@ import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.OrderedList;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility.AlignItems;
 import com.vaadin.flow.theme.lumo.LumoUtility.Background;
 import com.vaadin.flow.theme.lumo.LumoUtility.BorderRadius;
@@ -23,13 +21,13 @@ import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 
 public class TestListViewCard extends ListItem {
 
-    public TestListViewCard(String text, String title, String subTitle, String testID, int state) {
+    public TestListViewCard(String text, String title, String subTitle, String testID, int state, int id) {
         addClassNames(Background.CONTRAST_5, Display.FLEX, FlexDirection.COLUMN, AlignItems.START, Padding.MEDIUM,
                 BorderRadius.LARGE);
 
         addClickListener(e ->
                 getUI().ifPresent(ui ->
-                        ui.navigate(testID))
+                        ui.navigate(testID, QueryParameters.fromString(String.valueOf(id))))
         );
 
         Span header = new Span();
