@@ -33,4 +33,5 @@ public class TestComponents {
         this.answers = answers;
         this.answerTrue = answerTrue;
     }
+    public TestComponents(){}
 }
