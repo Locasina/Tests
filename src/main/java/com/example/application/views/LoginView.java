@@ -1,29 +1,42 @@
 package com.example.application.views;
 
+import com.example.application.security.SecurityService;
+import com.example.application.views.imagelist.TestsListView;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Route("login")
-@RouteAlias(value = "", layout = MainLayout.class)
+@RouteAlias(value = "")
 @PageTitle("Login | Tests")
 @AnonymousAllowed
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     private final LoginForm login = new LoginForm();
+    private SecurityService securityService;
 
-    public LoginView(){
-        addClassName("login-view");
-        setSizeFull();
-        setAlignItems(Alignment.CENTER);
-        setJustifyContentMode(JustifyContentMode.CENTER);
+    public LoginView(@Autowired SecurityService securityService){
+        this.securityService = securityService;
+        if (securityService.getAuthenticatedUser() != null) {
+            UI.getCurrent().getUI().ifPresent(ui -> { ui.navigate(TestsListView.class);
+                        }
+                         );
+        }
+        else {
+            addClassName("login-view");
+            setSizeFull();
+            setAlignItems(Alignment.CENTER);
+            setJustifyContentMode(JustifyContentMode.CENTER);
 
-        login.setAction("login");
+            login.setAction("login");
 
 
-        add(new H1("Vaadin CRM"), login);
+            add(new H1("Vaadin CRM"), login);
+        }
     }
 
     @Override
