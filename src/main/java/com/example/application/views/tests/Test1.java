@@ -6,9 +6,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
@@ -100,7 +98,6 @@ public class Test1 extends Composite<VerticalLayout> implements HasUrlParameter<
         radioGroup.setLabel(tc.questions.get(i));
         radioGroup.setItems(tc.answers.get(i));
         choiceNotifier(radioGroup);
-        System.out.println(str.equals("1"));
     }
 
     private void previousQuestion(RadioButtonGroup radioGroup){
