@@ -21,20 +21,17 @@ import java.util.Map;
 
 @PageTitle("test")
 @PermitAll
-@Route(value = "test", layout = MainLayout.class)
-public class Test1 extends Composite<VerticalLayout> implements HasUrlParameter<String>{
+@Route(value = "test/:testID", layout = MainLayout.class)
+public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObserver{
 
     static Map<String, List<String>> parametersMap;
+    private String testID;
 
-    String str = "";
-
-@Override
-    public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
-        Location location = event.getLocation();
-        QueryParameters queryParameters = location.getQueryParameters();
+    @Override
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         i = 1;
-        str = queryParameters.getQueryString();
-        tc = ComponentBuilder.getComponents(str);
+        testID = beforeEnterEvent.getRouteParameters().get("testID").get();
+        tc = ComponentBuilder.getComponents(testID);
         update();
     }
 
@@ -51,7 +48,7 @@ public class Test1 extends Composite<VerticalLayout> implements HasUrlParameter<
     static int numberOfQ = 5;
 
     RadioButtonGroup radioGroup = new RadioButtonGroup();
-    TestComponents tc = ComponentBuilder.getComponents("1");
+    TestComponents tc;
 
     public Test1() {
 
@@ -94,7 +91,7 @@ public class Test1 extends Composite<VerticalLayout> implements HasUrlParameter<
 
     }
     private void nextQuestion(RadioButtonGroup radioGroup){
-        tc = ComponentBuilder.getComponents(str);
+        tc = ComponentBuilder.getComponents(testID);
         radioGroup.setLabel(tc.questions.get(i));
         radioGroup.setItems(tc.answers.get(i));
         choiceNotifier(radioGroup);
@@ -137,6 +134,7 @@ public class Test1 extends Composite<VerticalLayout> implements HasUrlParameter<
         layoutRow.add(previousButton);
         getContent().add(layoutRow2);
     }
+
 
 
 }

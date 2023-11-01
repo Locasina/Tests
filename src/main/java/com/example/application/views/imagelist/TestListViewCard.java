@@ -27,7 +27,7 @@ public class TestListViewCard extends ListItem {
 
         addClickListener(e ->
                 getUI().ifPresent(ui ->
-                        ui.navigate(testID, QueryParameters.fromString(String.valueOf(id))))
+                        ui.navigate(Test1.class, new RouteParameters("testID", String.valueOf(id))))
         );
 
         Span header = new Span();
