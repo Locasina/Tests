@@ -19,12 +19,11 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     private final LoginForm login = new LoginForm();
     private SecurityService securityService;
 
+
     public LoginView(@Autowired SecurityService securityService){
         this.securityService = securityService;
         if (securityService.getAuthenticatedUser() != null) {
-            UI.getCurrent().getUI().ifPresent(ui -> { ui.navigate(TestsListView.class);
-                        }
-                         );
+            UI.getCurrent().getPage().setLocation("tests-list");
         }
         else {
             addClassName("login-view");
@@ -33,7 +32,6 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             setJustifyContentMode(JustifyContentMode.CENTER);
 
             login.setAction("login");
-
 
             add(new H1("Vaadin CRM"), login);
         }
