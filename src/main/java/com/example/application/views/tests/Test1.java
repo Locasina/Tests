@@ -1,5 +1,6 @@
 package com.example.application.views.tests;
 
+import com.example.application.data.HibernateUtil;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -14,6 +15,7 @@ import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
+import org.hibernate.Session;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,9 +28,12 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
     static Map<String, List<String>> parametersMap;
     private String testID;
+    Session session;
+
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        session = HibernateUtil.getSessionFactory().openSession();
         i = 1;
         testID = beforeEnterEvent.getRouteParameters().get("testID").get();
         tc = ComponentBuilder.getComponents(testID);

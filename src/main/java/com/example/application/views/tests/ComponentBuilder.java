@@ -51,7 +51,6 @@ public class ComponentBuilder {
             questions.put(3, "Какой сейчас год");
             questions.put(4, "Зимой и летом одним цветом");
             questions.put(5, "Тяжело в учении легко в ...");
-            System.out.println(str + " " + str.equals("1"));
             return new TestComponents(typeQ, questions, answers, answerTrue);
         }
     }
