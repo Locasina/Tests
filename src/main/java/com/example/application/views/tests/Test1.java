@@ -1,5 +1,8 @@
 package com.example.application.views.tests;
 
+import com.example.application.data.entity.Question;
+import com.example.application.data.repository.QuestionRepository;
+import com.example.application.data.repository.TestRepository;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -14,25 +17,48 @@ import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @PageTitle("test")
 @PermitAll
 @Route(value = "test/:testID", layout = MainLayout.class)
 public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObserver{
 
+    ComponentBuilder cb;
+
     static Map<String, List<String>> parametersMap;
+    @Autowired
+    private TestRepository testRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
     private String testID;
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+
         i = 1;
         testID = beforeEnterEvent.getRouteParameters().get("testID").get();
-        tc = ComponentBuilder.getComponents(testID);
+
+
+        Iterable<Question> somequestion = questionRepository.findAll();
+        List<Question> result =
+                StreamSupport.stream(somequestion.spliterator(), false)
+                        .collect(Collectors.toList());
+        Question question = result.get(0);
+        System.out.println(question.getQuestionId());
+        System.out.println(result.get(0));
+        cb = new ComponentBuilder(result, testID);
+        tc = cb.getComponents(testID);
+        System.out.println(tc.questions);
         update();
+
     }
 
     H1 h1 = new H1();
@@ -91,14 +117,14 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
     }
     private void nextQuestion(RadioButtonGroup radioGroup){
-        tc = ComponentBuilder.getComponents(testID);
-        radioGroup.setLabel(tc.questions.get(i));
+        tc = cb.getComponents(testID);
+        radioGroup.setLabel(tc.questions.get(i-1));
         radioGroup.setItems(tc.answers.get(i));
         choiceNotifier(radioGroup);
     }
 
     private void previousQuestion(RadioButtonGroup radioGroup){
-        radioGroup.setLabel(tc.questions.get(i));
+        radioGroup.setLabel(tc.questions.get(i-1));
         radioGroup.setItems(tc.answers.get(i));
         choiceNotifier(radioGroup);
 
@@ -112,7 +138,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
     private void update(){
         h1.setText(i + "/" + numberOfQ);
-        radioGroup.setLabel(tc.questions.get(i));
+        radioGroup.setLabel(tc.questions.get(i-1));
         radioGroup.setItems(tc.answers.get(i));
         radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
         layoutRow.setWidthFull();
