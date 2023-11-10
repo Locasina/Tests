@@ -38,6 +38,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     private TestRepository testRepository;
     @Autowired
     private QuestionRepository questionRepository;
+
     private String testID;
 
     @Override
@@ -45,7 +46,6 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
         i = 1;
         testID = beforeEnterEvent.getRouteParameters().get("testID").get();
-
 
         Iterable<Question> somequestion = questionRepository.findAll();
         List<Question> result =
