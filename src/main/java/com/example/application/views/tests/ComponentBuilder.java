@@ -1,5 +1,6 @@
 package com.example.application.views.tests;
 
+import com.example.application.data.entity.Answer;
 import com.example.application.data.entity.Question;
 import com.example.application.data.repository.QuestionRepository;
 import com.example.application.data.repository.TestRepository;
@@ -16,12 +17,21 @@ import java.util.stream.StreamSupport;
 
 
 public class ComponentBuilder {
+    ArrayList al;
     List<Question> result;
-    ComponentBuilder (List<Question>result, String str) {
+    ComponentBuilder (List<Question>result, List<Answer>answer, String str) {
         for (Question q:
                 result) {
-            if(q.getTestId() == Integer.parseInt(str))
+            if(q.getTestId() == Integer.parseInt(str)) {
                 questions.add(q.getText());
+                ArrayList al = new ArrayList<>();
+                for (int i = 0; i < answer.size(); i++) {
+                    if(q.getQuestionId() == answer.get(i).getQuestionId()) {
+                            al.add(answer.get(i).getText());
+                    }
+                }
+                answers.put(q.getQuestionId(), al);
+            }
         }
 
     }
@@ -33,14 +43,7 @@ public class ComponentBuilder {
         }
     }
     ArrayList<String> questions = new ArrayList<>();
-    static Map<Integer, String[]> answers = new HashMap();
-    static {
-        answers.put(1, new String[]{"красное", "голубое","жёлтое","Зелёное"});
-        answers.put(2, new String[]{"один", "два","три","четыре"});
-        answers.put(3, new String[]{"1000", "2000","2023","2007"});
-        answers.put(4, new String[]{"Ёлка", "Подснежник","Принтер","Мухамор"});
-        answers.put(5, new String[]{"Мучении", "Нраваучении","Сожалении","Бою"});
-    }
+    Map<Integer, ArrayList> answers = new HashMap();
 
     static Map<Integer,Integer> answerTrue = new HashMap<>();
     static {

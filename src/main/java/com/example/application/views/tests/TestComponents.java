@@ -10,14 +10,14 @@ import java.util.Map;
 public class TestComponents {
     Map<Integer, Integer> typeQ;
     ArrayList<String> questions;
-    Map<Integer, String[]> answers;
+    Map<Integer, ArrayList> answers;
     Map<Integer,Integer> answerTrue;
     RadioButtonGroup radioGroup;
     HorizontalLayout layoutRow;
     HorizontalLayout layoutRow2;
     HorizontalLayout layoutRow3;
 
-    public TestComponents(Map<Integer, Integer> typeQ, ArrayList<String> questions, Map<Integer, String[]> answers, Map<Integer, Integer> answerTrue, RadioButtonGroup radioGroup, HorizontalLayout layoutRow, HorizontalLayout layoutRow2, HorizontalLayout layoutRow3) {
+    public TestComponents(Map<Integer, Integer> typeQ, ArrayList<String> questions, Map<Integer, ArrayList> answers, Map<Integer, Integer> answerTrue, RadioButtonGroup radioGroup, HorizontalLayout layoutRow, HorizontalLayout layoutRow2, HorizontalLayout layoutRow3) {
         this.typeQ = typeQ;
         this.questions = questions;
         this.answers = answers;
@@ -28,7 +28,7 @@ public class TestComponents {
         this.layoutRow3 = layoutRow3;
     }
 
-    public TestComponents(Map<Integer, Integer> typeQ, ArrayList<String> questions, Map<Integer, String[]> answers, Map<Integer, Integer> answerTrue) {
+    public TestComponents(Map<Integer, Integer> typeQ, ArrayList<String> questions, Map<Integer, ArrayList> answers, Map<Integer, Integer> answerTrue) {
         this.typeQ = typeQ;
         this.questions = questions;
         this.answers = answers;

@@ -1,6 +1,8 @@
 package com.example.application.views.tests;
 
+import com.example.application.data.entity.Answer;
 import com.example.application.data.entity.Question;
+import com.example.application.data.repository.AnswerRepository;
 import com.example.application.data.repository.QuestionRepository;
 import com.example.application.data.repository.TestRepository;
 import com.example.application.security.SecurityService;
@@ -39,6 +41,8 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     private TestRepository testRepository;
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private AnswerRepository answerRepository;
 
     private String testID;
 
@@ -49,11 +53,15 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
         List<Question> result =
                 StreamSupport.stream(questionRepository.findAll().spliterator(), false)
                         .collect(Collectors.toList());
-        cb = new ComponentBuilder(result, testID);
+        List<Answer> answer =
+                StreamSupport.stream(answerRepository.findAll().spliterator(), false)
+                        .collect(Collectors.toList());
+
+        cb = new ComponentBuilder(result,answer, testID);
         tc = cb.getComponents(testID);
-        System.out.println(tc.questions);
         numberOfQ = cb.questions.size();
         update();
+        System.out.println(cb.answers.get(2));
 
     }
 
