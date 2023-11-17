@@ -3,6 +3,7 @@ package com.example.application.views.tests;
 import com.example.application.data.entity.Question;
 import com.example.application.data.repository.QuestionRepository;
 import com.example.application.data.repository.TestRepository;
+import com.example.application.security.SecurityService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -30,7 +31,7 @@ import java.util.stream.StreamSupport;
 @PermitAll
 @Route(value = "test/:testID", layout = MainLayout.class)
 public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObserver{
-
+    @Autowired SecurityService securityService;
     ComponentBuilder cb;
 
     static Map<String, List<String>> parametersMap;
@@ -43,20 +44,15 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-
         i = 1;
         testID = beforeEnterEvent.getRouteParameters().get("testID").get();
-
-        Iterable<Question> somequestion = questionRepository.findAll();
         List<Question> result =
-                StreamSupport.stream(somequestion.spliterator(), false)
+                StreamSupport.stream(questionRepository.findAll().spliterator(), false)
                         .collect(Collectors.toList());
-        Question question = result.get(0);
-        System.out.println(question.getQuestionId());
-        System.out.println(result.get(0));
         cb = new ComponentBuilder(result, testID);
         tc = cb.getComponents(testID);
         System.out.println(tc.questions);
+        numberOfQ = cb.questions.size();
         update();
 
     }
@@ -77,7 +73,6 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     TestComponents tc;
 
     public Test1() {
-
 
 
         getContent().setHeightFull();

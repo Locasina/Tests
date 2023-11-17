@@ -23,6 +23,7 @@ public class ComponentBuilder {
             if(q.getTestId() == Integer.parseInt(str))
                 questions.add(q.getText());
         }
+
     }
     Iterable<Question> somequestion = null;
     static Map<Integer, Integer> typeQ = new HashMap<>();
