@@ -13,6 +13,7 @@ import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
@@ -33,10 +34,9 @@ import java.util.stream.StreamSupport;
 @PermitAll
 @Route(value = "test/:testID", layout = MainLayout.class)
 public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObserver{
-    @Autowired SecurityService securityService;
-    ComponentBuilder cb;
 
-    static Map<String, List<String>> parametersMap;
+    @Autowired
+    SecurityService securityService;
     @Autowired
     private TestRepository testRepository;
     @Autowired
@@ -44,26 +44,11 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     @Autowired
     private AnswerRepository answerRepository;
 
+//    static Map<String, List<String>> parametersMap;
+
+    ComponentBuilder cb;
+
     private String testID;
-
-    @Override
-    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        i = 1;
-        testID = beforeEnterEvent.getRouteParameters().get("testID").get();
-        List<Question> result =
-                StreamSupport.stream(questionRepository.findAll().spliterator(), false)
-                        .collect(Collectors.toList());
-        List<Answer> answer =
-                StreamSupport.stream(answerRepository.findAll().spliterator(), false)
-                        .collect(Collectors.toList());
-
-        cb = new ComponentBuilder(result,answer, testID);
-        tc = cb.getComponents(testID);
-        numberOfQ = cb.questions.size();
-        update();
-        System.out.println(cb.answers.get(2));
-
-    }
 
     H1 h1 = new H1();
 
@@ -78,7 +63,32 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     static int numberOfQ = 5;
 
     RadioButtonGroup radioGroup = new RadioButtonGroup();
+
+    MultiSelectListBox optionsColumn1 = new MultiSelectListBox();
+
+    MultiSelectListBox optionsColumn2 = new MultiSelectListBox();
     TestComponents tc;
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        i = 1;
+        testID = beforeEnterEvent.getRouteParameters().get("testID").get();
+        List<Question> result =
+                StreamSupport.stream(questionRepository.findAll().spliterator(), false)
+                        .collect(Collectors.toList());
+        List<Answer> answer =
+                StreamSupport.stream(answerRepository.findAll().spliterator(), false)
+                        .collect(Collectors.toList());
+
+        cb = new ComponentBuilder(result, answer, testID);
+        tc = cb.getComponents(testID);
+        numberOfQ = cb.questions.size();
+        update();
+        System.out.println(cb.answers.get(2));
+
+    }
+
+
 
     public Test1() {
 
@@ -91,9 +101,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             if(event.getValue()!= null){
                 option = (String) event.getValue();
             }
-
         });
-
 
         nextButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
             if (i < numberOfQ) {
@@ -119,14 +127,15 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
         });
 
     }
-    private void nextQuestion(RadioButtonGroup radioGroup){
+    private void nextQuestion(RadioButtonGroup radioGroup){                 //дб не с АРГ, а с проверкой на typeQ
+
         tc = cb.getComponents(testID);
         radioGroup.setLabel(tc.questions.get(i-1));
         radioGroup.setItems(tc.answers.get(i));
         choiceNotifier(radioGroup);
     }
 
-    private void previousQuestion(RadioButtonGroup radioGroup){
+    private void previousQuestion(RadioButtonGroup radioGroup){             //дб не с АРГ, а с проверкой на typeQ
         radioGroup.setLabel(tc.questions.get(i-1));
         radioGroup.setItems(tc.answers.get(i));
         choiceNotifier(radioGroup);
@@ -140,13 +149,13 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     }
 
     private void update(){
-        h1.setText(i + "/" + numberOfQ);
-        radioGroup.setLabel(tc.questions.get(i-1));
-        radioGroup.setItems(tc.answers.get(i));
-        radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
-        layoutRow.setWidthFull();
-        getContent().setFlexGrow(1.0, layoutRow);
-        layoutRow.addClassName(Gap.MEDIUM);
+        h1.setText(i + "/" + numberOfQ);                                          //           ЗАВ
+        radioGroup.setLabel(tc.questions.get(i-1));                               //
+        radioGroup.setItems(tc.answers.get(i));                                   //            ОТ
+        radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);             //
+        layoutRow.setWidthFull();                                                 //           typeQ
+        getContent().setFlexGrow(1.0, layoutRow);                         //
+        layoutRow.addClassName(Gap.MEDIUM);                                       //
 
         nextButton.setText("next");
         nextButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

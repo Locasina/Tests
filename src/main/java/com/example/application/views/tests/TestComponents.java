@@ -4,11 +4,10 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class TestComponents {
-    Map<Integer, Integer> typeQ;
+    Integer typeQ;
     ArrayList<String> questions;
     Map<Integer, ArrayList> answers;
     Map<Integer,Integer> answerTrue;
@@ -17,7 +16,7 @@ public class TestComponents {
     HorizontalLayout layoutRow2;
     HorizontalLayout layoutRow3;
 
-    public TestComponents(Map<Integer, Integer> typeQ, ArrayList<String> questions, Map<Integer, ArrayList> answers, Map<Integer, Integer> answerTrue, RadioButtonGroup radioGroup, HorizontalLayout layoutRow, HorizontalLayout layoutRow2, HorizontalLayout layoutRow3) {
+    public TestComponents(Integer typeQ, ArrayList<String> questions, Map<Integer, ArrayList> answers, Map<Integer, Integer> answerTrue, RadioButtonGroup radioGroup, HorizontalLayout layoutRow, HorizontalLayout layoutRow2, HorizontalLayout layoutRow3) {
         this.typeQ = typeQ;
         this.questions = questions;
         this.answers = answers;
@@ -28,7 +27,7 @@ public class TestComponents {
         this.layoutRow3 = layoutRow3;
     }
 
-    public TestComponents(Map<Integer, Integer> typeQ, ArrayList<String> questions, Map<Integer, ArrayList> answers, Map<Integer, Integer> answerTrue) {
+    public TestComponents(Integer typeQ, ArrayList<String> questions, Map<Integer, ArrayList> answers, Map<Integer, Integer> answerTrue) {
         this.typeQ = typeQ;
         this.questions = questions;
         this.answers = answers;

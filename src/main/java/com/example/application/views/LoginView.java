@@ -1,5 +1,8 @@
 package com.example.application.views;
 
+import com.example.application.data.entity.User;
+import com.example.application.data.repository.QuestionRepository;
+import com.example.application.data.repository.UserRepository;
 import com.example.application.security.SecurityService;
 import com.example.application.views.imagelist.TestsListView;
 import com.vaadin.flow.component.UI;
@@ -40,6 +43,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         // inform the user about an authentication error
+
         if(beforeEnterEvent.getLocation()
                 .getQueryParameters()
                 .getParameters()

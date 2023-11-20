@@ -2,48 +2,45 @@ package com.example.application.views.tests;
 
 import com.example.application.data.entity.Answer;
 import com.example.application.data.entity.Question;
-import com.example.application.data.repository.QuestionRepository;
-import com.example.application.data.repository.TestRepository;
-import com.vaadin.flow.router.Route;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 
 public class ComponentBuilder {
-    ArrayList al;
-    List<Question> result;
-    ComponentBuilder (List<Question>result, List<Answer>answer, String str) {
-        for (Question q:
-                result) {
+
+     Integer typeQ;
+
+
+       ArrayList<String> answersText;                                                                                             //текст ответов
+
+    //  List<Question> result;
+
+    ArrayList<String> questions = new ArrayList<>();
+
+    Map<Integer, ArrayList> answers = new HashMap();
+    ComponentBuilder (List<Question> result, List<Answer> answer, String str) {
+
+
+        for (Question q: result) {
             if(q.getTestId() == Integer.parseInt(str)) {
+                typeQ = q.getTypeQ();
                 questions.add(q.getText());
-                ArrayList al = new ArrayList<>();
+                 answersText = new ArrayList();
+
                 for (int i = 0; i < answer.size(); i++) {
                     if(q.getQuestionId() == answer.get(i).getQuestionId()) {
-                            al.add(answer.get(i).getText());
+                            answersText.add(answer.get(i).getText());
                     }
                 }
-                answers.put(q.getQuestionId(), al);
+                answers.put(q.getQuestionId(), answersText);
             }
         }
 
     }
-    Iterable<Question> somequestion = null;
-    static Map<Integer, Integer> typeQ = new HashMap<>();
-    static {
-        for (int j = 1; j <= 5; j++) {
-            typeQ.put(j, 1);
-        }
-    }
-    ArrayList<String> questions = new ArrayList<>();
-    Map<Integer, ArrayList> answers = new HashMap();
+    Iterable<Question> someQuestion = null;
 
     static Map<Integer,Integer> answerTrue = new HashMap<>();
     static {
@@ -53,7 +50,7 @@ public class ComponentBuilder {
         answerTrue.put(4, 1);
         answerTrue.put(5, 4);
     }
-    static TestComponents tc = new TestComponents();
+
     TestComponents getComponents(String str) {
 
         return new TestComponents(typeQ, questions, answers, answerTrue);

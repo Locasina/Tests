@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 public class Test {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
+
     private Integer testId;
     private String text;
 }

@@ -8,13 +8,13 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Question {
+
+public class OptionsMatching {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
+
     private Integer questionId;
+    private Integer columnId;
+    private Integer optionId;
     private String text;
-    private Integer testId;
-    private Integer typeQ;
-
-
 }
