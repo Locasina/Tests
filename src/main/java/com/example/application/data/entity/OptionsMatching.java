@@ -12,7 +12,6 @@ import lombok.Data;
 public class OptionsMatching {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-
     private Integer questionId;
     private Integer columnId;
     private Integer optionId;
