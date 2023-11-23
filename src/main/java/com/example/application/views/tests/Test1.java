@@ -23,10 +23,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -46,7 +43,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
 //    static Map<String, List<String>> parametersMap;
 
-    ComponentBuilder cb;
+    ComponentController cc;
 
     private String testID;
 
@@ -58,39 +55,47 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     HorizontalLayout layoutRow2 = new HorizontalLayout();
 
     Map <Integer, String> chosenOptions = new HashMap<>();
-    static String option;
-    static int i = 1;
-    static int numberOfQ = 5;
+    List<Question> questions;
+    List<Answer> answers;
+
+     String option;
+     int i;
+     int numberOfQ;
 
     RadioButtonGroup radioGroup = new RadioButtonGroup();
 
     MultiSelectListBox optionsColumn1 = new MultiSelectListBox();
 
     MultiSelectListBox optionsColumn2 = new MultiSelectListBox();
-    TestComponents tc;
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         i = 1;
         testID = beforeEnterEvent.getRouteParameters().get("testID").get();
-        List<Question> result =
+        Answer as = new Answer();
+        as.setQuestionId(1);
+         questions =
                 StreamSupport.stream(questionRepository.findAll().spliterator(), false)
                         .collect(Collectors.toList());
-        List<Answer> answer =
+         answers =
                 StreamSupport.stream(answerRepository.findAll().spliterator(), false)
                         .collect(Collectors.toList());
+        System.out.println(questions);
+        System.out.println(answers);
 
-        cb = new ComponentBuilder(result, answer, testID);
-        tc = cb.getComponents(testID);
-        numberOfQ = cb.questions.size();
+        cc = new ComponentController(questions, answers, testID);
+        System.out.println(cc.questionsText);
+        System.out.println(cc.answers);              //cb посредник, надо куда-то сдыбрить код из него
+        numberOfQ = cc.questionsText.size();
         update();
-        System.out.println(cb.answers.get(2));
+        System.out.println(cc.answers.get(2));
 
     }
 
 
 
     public Test1() {
+
 
 
         getContent().setHeightFull();
@@ -128,16 +133,15 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
     }
     private void nextQuestion(RadioButtonGroup radioGroup){                 //дб не с АРГ, а с проверкой на typeQ
-
-        tc = cb.getComponents(testID);
-        radioGroup.setLabel(tc.questions.get(i-1));
-        radioGroup.setItems(tc.answers.get(i));
+        radioGroup.setLabel(cc.questionsText.get(i-1));
+        radioGroup.setItems(cc.answers.get(i));
         choiceNotifier(radioGroup);
+        System.out.println(questions.get(i-1).getTypeQ());
     }
 
     private void previousQuestion(RadioButtonGroup radioGroup){             //дб не с АРГ, а с проверкой на typeQ
-        radioGroup.setLabel(tc.questions.get(i-1));
-        radioGroup.setItems(tc.answers.get(i));
+        radioGroup.setLabel(cc.questionsText.get(i-1));
+        radioGroup.setItems(cc.answers.get(i));
         choiceNotifier(radioGroup);
 
     }
@@ -150,8 +154,8 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
     private void update(){
         h1.setText(i + "/" + numberOfQ);                                          //           ЗАВ
-        radioGroup.setLabel(tc.questions.get(i-1));                               //
-        radioGroup.setItems(tc.answers.get(i));                                   //            ОТ
+        radioGroup.setLabel(questions.get(i-1).getText());                               //
+        radioGroup.setItems(cc.answers.get(i));                                   //            ОТ
         radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);             //
         layoutRow.setWidthFull();                                                 //           typeQ
         getContent().setFlexGrow(1.0, layoutRow);                         //

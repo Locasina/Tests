@@ -2,9 +2,11 @@ package com.example.application.views;
 
 
 
+import com.example.application.data.entity.Answer;
 import com.example.application.data.entity.OptionsMatching;
 import com.example.application.data.entity.Question;
 import com.example.application.data.repository.OptionsMatchingRepository;
+import com.example.application.data.repository.QuestionRepository;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.dependency.Uses;
@@ -24,13 +26,15 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @PageTitle("My View")
-@Route(value = "my-view", layout = MainLayout.class)
+@Route(value = "sas", layout = MainLayout.class)
 @Uses(Icon.class)
 @AnonymousAllowed
 public class Sas extends Composite<VerticalLayout> implements BeforeEnterObserver {
 
     @Autowired
     OptionsMatchingRepository optionsMatchingRepository;
+    @Autowired
+    QuestionRepository questionRepository;
     OptionsMatching optionsMatching = new OptionsMatching();
 
     public Sas() {
@@ -39,12 +43,18 @@ public class Sas extends Composite<VerticalLayout> implements BeforeEnterObserve
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        List<Question> question =
+                StreamSupport.stream(questionRepository.findAll().spliterator(), false)
+                        .collect(Collectors.toList());
         if(optionsMatchingRepository.count()==0) {
+            optionsMatching = new OptionsMatching();
+            optionsMatching.setQuestion(question.get(1));
             optionsMatching.setText("один");
             optionsMatchingRepository.save(optionsMatching);
 
             optionsMatching = new OptionsMatching();
             optionsMatching.setText("два");
+
             optionsMatchingRepository.save(optionsMatching);
 
             optionsMatching = new OptionsMatching();
@@ -58,9 +68,12 @@ public class Sas extends Composite<VerticalLayout> implements BeforeEnterObserve
 
 
         }
+
         List<OptionsMatching> result =
                 StreamSupport.stream(optionsMatchingRepository.findAll().spliterator(), false)
                         .collect(Collectors.toList());
+
+
 
         List<SampleItem> sampleItems = new ArrayList<>();
 

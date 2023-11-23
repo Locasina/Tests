@@ -1,9 +1,6 @@
 package com.example.application.data.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -16,4 +13,8 @@ public class OptionsMatching {
     private Integer columnId;
     private Integer optionId;
     private String text;
+    @ManyToOne
+    private Question question;
+
+
 }
