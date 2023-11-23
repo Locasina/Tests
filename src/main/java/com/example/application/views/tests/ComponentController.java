@@ -23,7 +23,7 @@ public class ComponentController {
         questionsText = new ArrayList<>();
         answersText = new ArrayList<>();
         answers = new HashMap<>();
-
+        int t = 1;
 
         for (Question q: sourceQuestions) {
             if(q.getTestId() == Integer.parseInt(str)) {
@@ -36,7 +36,8 @@ public class ComponentController {
                         answersText.add(answer.get(i).getText());
                     }
                 }
-                answers.put(q.getQuestionId(), answersText);
+                answers.put(t, answersText);
+                t++;
             }
         }
 
