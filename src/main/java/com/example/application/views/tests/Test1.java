@@ -154,7 +154,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
     private void update(){
         h1.setText(i + "/" + numberOfQ);                                          //           ЗАВ
-        radioGroup.setLabel(questions.get(i-1).getText());                               //
+        radioGroup.setLabel(cc.questionsText.get(i-1));                               //
         radioGroup.setItems(cc.answers.get(i));                                   //            ОТ
         radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);             //
         layoutRow.setWidthFull();                                                 //           typeQ
