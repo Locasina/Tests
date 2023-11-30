@@ -13,6 +13,6 @@ public class Test {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
 
-    private Integer testId;
+    private Integer Id;
     private String text;
 }

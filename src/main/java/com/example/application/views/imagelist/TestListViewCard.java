@@ -58,12 +58,6 @@ public class TestListViewCard extends ListItem {
             badge.setText("Passed");
         }
 
-//        Span button = new Span("Go");
-//        button.addClickListener(e ->
-//                button.getUI().ifPresent(ui ->
-//                        ui.navigate(testID))
-//        );
-
         add( header, subtitle, description, badge);
 
     }

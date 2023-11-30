@@ -1,10 +1,8 @@
 package com.example.application.data.repository;
 
 import com.example.application.data.entity.Answer;
+import com.example.application.data.entity.MultiChoiceAnswer;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
-
-public interface AnswerRepository extends CrudRepository<Answer, Integer> {
-    List<Answer> findByQuestionId(int id);
+public interface MultiChoiceAnswerRepository extends CrudRepository<MultiChoiceAnswer, Integer> {
 }

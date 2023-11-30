@@ -3,11 +3,11 @@ package com.example.application.views;
 
 
 import com.example.application.data.entity.Answer;
-import com.example.application.data.entity.OptionsMatching;
+import com.example.application.data.entity.MultiChoiceAnswer;
 import com.example.application.data.entity.Question;
-import com.example.application.data.repository.OptionsMatchingRepository;
+import com.example.application.data.repository.AnswerRepository;
+import com.example.application.data.repository.MultiChoiceAnswerRepository;
 import com.example.application.data.repository.QuestionRepository;
-import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.icon.Icon;
@@ -32,10 +32,11 @@ import java.util.stream.StreamSupport;
 public class Sas extends Composite<VerticalLayout> implements BeforeEnterObserver {
 
     @Autowired
-    OptionsMatchingRepository optionsMatchingRepository;
+    AnswerRepository answerRepository;
     @Autowired
     QuestionRepository questionRepository;
-    OptionsMatching optionsMatching = new OptionsMatching();
+    @Autowired
+    MultiChoiceAnswerRepository mcaRepo;
 
     public Sas() {
 
@@ -43,44 +44,20 @@ public class Sas extends Composite<VerticalLayout> implements BeforeEnterObserve
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        List<Question> question =
-                StreamSupport.stream(questionRepository.findAll().spliterator(), false)
-                        .collect(Collectors.toList());
-        if(optionsMatchingRepository.count()==0) {
-            optionsMatching = new OptionsMatching();
-            optionsMatching.setQuestion(question.get(1));
-            optionsMatching.setText("один");
-            optionsMatchingRepository.save(optionsMatching);
-
-            optionsMatching = new OptionsMatching();
-            optionsMatching.setText("два");
-
-            optionsMatchingRepository.save(optionsMatching);
-
-            optionsMatching = new OptionsMatching();
-            optionsMatching.setText("три");
-            optionsMatchingRepository.save(optionsMatching);
-
-            optionsMatching = new OptionsMatching();
-            optionsMatching.setText("чатыре");
-            optionsMatchingRepository.save(optionsMatching);
 
 
-
-        }
-
-        List<OptionsMatching> result =
-                StreamSupport.stream(optionsMatchingRepository.findAll().spliterator(), false)
-                        .collect(Collectors.toList());
+//        List<Answer> result =
+//                StreamSupport.stream(answerRepository.findAll().spliterator(), false)
+//                        .collect(Collectors.toList());
 
 
 
         List<SampleItem> sampleItems = new ArrayList<>();
 
-        sampleItems.add(new SampleItem(result.get(0).getText(), result.get(0).getText(), null));
-        sampleItems.add(new SampleItem(result.get(1).getText(), result.get(1).getText(), null));
-        sampleItems.add(new SampleItem(result.get(2).getText(), result.get(2).getText(), null));
-        sampleItems.add(new SampleItem(result.get(3).getText(), result.get(3).getText(), null));
+//        sampleItems.add(new SampleItem(result.get(0).getText(), result.get(0).getText(), null));
+//        sampleItems.add(new SampleItem(result.get(1).getText(), result.get(1).getText(), null));
+//        sampleItems.add(new SampleItem(result.get(2).getText(), result.get(2).getText(), null));
+//        sampleItems.add(new SampleItem(result.get(3).getText(), result.get(3).getText(), null));
 
         MultiSelectListBox textItems = new MultiSelectListBox();
         getContent().setWidth("100%");
@@ -90,6 +67,10 @@ public class Sas extends Composite<VerticalLayout> implements BeforeEnterObserve
         textItems.setItemLabelGenerator(item -> ((SampleItem) item).label());
         textItems.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
         getContent().add(textItems);
+
+
+
+
     }
 
     record SampleItem(String value, String label, Boolean disabled) {

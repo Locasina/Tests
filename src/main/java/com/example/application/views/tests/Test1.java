@@ -14,6 +14,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
@@ -72,23 +73,20 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         i = 1;
         testID = beforeEnterEvent.getRouteParameters().get("testID").get();
-        Answer as = new Answer();
-        as.setQuestionId(1);
          questions =
                 StreamSupport.stream(questionRepository.findAll().spliterator(), false)
                         .collect(Collectors.toList());
          answers =
                 StreamSupport.stream(answerRepository.findAll().spliterator(), false)
                         .collect(Collectors.toList());
-        System.out.println(questions);
-        System.out.println(answers);
+
 
         cc = new ComponentController(questions, answers, testID);
         System.out.println(cc.questionsText);
-        System.out.println(cc.answers);              //cb посредник, надо куда-то сдыбрить код из него
         numberOfQ = cc.questionsText.size();
         update();
-        System.out.println(cc.answers.get(2));
+
+
 
     }
 
@@ -96,11 +94,8 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
     public Test1() {
 
-
-
         getContent().setHeightFull();
         getContent().setWidthFull();
-
 
         radioGroup.addValueChangeListener(event -> {
             if(event.getValue()!= null){
@@ -114,7 +109,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
                     chosenOptions.put(i, option);
                 i++;
 
-                nextQuestion(radioGroup);
+                nextQuestion();
                 option = null;
             }
             h1.setText(i + "/" + numberOfQ);
@@ -125,24 +120,30 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
                 if (option != null)
                     chosenOptions.put(i, option);
                 i--;
-                previousQuestion(radioGroup);
+                previousQuestion();
                 option = null;
             }
             h1.setText(i + "/" + numberOfQ);
         });
 
     }
-    private void nextQuestion(RadioButtonGroup radioGroup){                 //дб не с АРГ, а с проверкой на typeQ
-        radioGroup.setLabel(cc.questionsText.get(i-1));
-        radioGroup.setItems(cc.answers.get(i));
-        choiceNotifier(radioGroup);
-        System.out.println(questions.get(i-1).getTypeQ());
+    private void nextQuestion(){
+        if(cc.typeQ.get(i)==1) {
+            radioGroup.setLabel(cc.questionsText.get(i));
+            radioGroup.setItems(cc.answers.get(i));
+            choiceNotifier(radioGroup);
+            System.out.println(cc.questionsText.get(i));
+            System.out.println(cc.typeQ.get(i));
+
+        }
     }
 
-    private void previousQuestion(RadioButtonGroup radioGroup){             //дб не с АРГ, а с проверкой на typeQ
-        radioGroup.setLabel(cc.questionsText.get(i-1));
-        radioGroup.setItems(cc.answers.get(i));
-        choiceNotifier(radioGroup);
+    private void previousQuestion(){
+        if(cc.typeQ.get(i)==1) {
+            radioGroup.setLabel(cc.questionsText.get(i));
+            radioGroup.setItems(cc.answers.get(i));
+            choiceNotifier(radioGroup);
+        }
 
     }
     private void choiceNotifier (RadioButtonGroup radioButtonGroup){
@@ -153,28 +154,69 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     }
 
     private void update(){
-        h1.setText(i + "/" + numberOfQ);                                          //           ЗАВ
-        radioGroup.setLabel(cc.questionsText.get(i-1));                               //
-        radioGroup.setItems(cc.answers.get(i));                                   //            ОТ
-        radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);             //
-        layoutRow.setWidthFull();                                                 //           typeQ
-        getContent().setFlexGrow(1.0, layoutRow);                         //
-        layoutRow.addClassName(Gap.MEDIUM);                                       //
+        if(cc.typeQ.get(i)==1) {
+            h1.setText(i + "/" + numberOfQ);
+            radioGroup.setLabel(cc.questionsText.get(i));
+            radioGroup.setItems(cc.answers.get(i));
+            radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+            layoutRow.setWidthFull();
+            getContent().setFlexGrow(1.0, layoutRow);
+            layoutRow.addClassName(Gap.MEDIUM);
 
-        nextButton.setText("next");
-        nextButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        previousButton.setText("previous");
-        previousButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        layoutRow2.setWidthFull();
-        getContent().setFlexGrow(1.0, layoutRow2);
-        layoutRow2.addClassName(Gap.MEDIUM);
+            nextButton.setText("next");
+            nextButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            previousButton.setText("previous");
+            previousButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            layoutRow2.setWidthFull();
+            getContent().setFlexGrow(1.0, layoutRow2);
+            layoutRow2.addClassName(Gap.MEDIUM);
 
-        getContent().add(h1);
-        getContent().add(radioGroup);
-        getContent().add(layoutRow);
-        layoutRow.add(nextButton);
-        layoutRow.add(previousButton);
-        getContent().add(layoutRow2);
+            getContent().add(h1);
+            getContent().add(radioGroup);
+            getContent().add(layoutRow);
+            layoutRow.add(nextButton);
+            layoutRow.add(previousButton);
+            getContent().add(layoutRow2);
+        }
+        if(cc.typeQ.get(i)==2){
+            h1.setText(i + "/" + numberOfQ);
+            HorizontalLayout layoutRow = new HorizontalLayout();
+            HorizontalLayout layoutRow2 = new HorizontalLayout();
+            getContent().setWidth("100%");
+            getContent().getStyle().set("flex-grow", "1");
+            layoutRow.setWidthFull();
+            getContent().setFlexGrow(1.0, layoutRow);
+            layoutRow.addClassName(Gap.XSMALL);
+            layoutRow.setWidth("100%");
+            layoutRow.getStyle().set("flex-grow", "1");
+            layoutRow.setAlignItems(FlexComponent.Alignment.START);
+            layoutRow.setJustifyContentMode(FlexComponent.JustifyContentMode.START);
+            optionsColumn1.setWidth("min-content");
+            //set mb value
+            layoutRow2.setHeightFull();
+            layoutRow.setFlexGrow(1.0, layoutRow2);
+            layoutRow2.addClassName(Gap.XSMALL);
+            layoutRow2.setWidth("100%");
+            layoutRow2.getStyle().set("flex-grow", "1");
+            optionsColumn2.setWidth("min-content");
+            //set mb value
+            getContent().add(layoutRow);
+            layoutRow.add(optionsColumn1);
+            layoutRow.add(layoutRow2);
+            layoutRow2.add(optionsColumn2);
+
+
+
+
+
+
+
+            getContent().add(h1);
+
+        }
+        System.out.println(answerRepository.findByQuestionId(1));
+
+
     }
 
 

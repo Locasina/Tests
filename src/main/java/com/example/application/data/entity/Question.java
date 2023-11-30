@@ -8,10 +8,15 @@ import lombok.Data;
 public class Question {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Integer questionId;
+    private Integer Id;
     private String text;
-    private Integer testId;
     private Integer typeQ;
+    @ManyToOne
+    @JoinColumn(name = "test_id")
+    private Test test;
+
+
+
 
 
 }

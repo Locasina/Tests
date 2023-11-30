@@ -3,22 +3,18 @@ package com.example.application.data.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Data
 @Entity
-
-public class Answer {
-
+@Data
+public class MultiChoiceAnswer {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private Integer Id;
-
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id")
     private Question question;
 
 
-    private String text;
-
-
+    private String column1;
+    private String column2;
 
 }
