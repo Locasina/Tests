@@ -3,32 +3,33 @@ package com.example.application.views.tests;
 import com.example.application.data.entity.Answer;
 import com.example.application.data.entity.Question;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class ComponentController {
 
-     public Map<Integer, Integer> typeQ;
+     ArrayList typeQ;
      Map<Integer, ArrayList> answers;
      ArrayList<String> answersText;                                                                                             //текст ответов
-     Map<Integer, String> questionsText;
+     ArrayList<String> questionsText;
 
 
     ComponentController(List<Question> sourceQuestions, List<Answer> answer, String str) {
 
-        typeQ = new HashMap<>();
-        questionsText = new HashMap<>();
-
+        typeQ = new ArrayList();
+        questionsText = new ArrayList<>();
+        answersText = new ArrayList<>();
         answers = new HashMap<>();
-
         int t = 1;
 
-
         for (Question q: sourceQuestions) {
-            if(q.getTest().getId() == Integer.parseInt(str)) {
-                typeQ.put(t, q.getTypeQ());
-                questionsText.put(t, q.getText());
-                answersText = new ArrayList<>();
+            if(q.getTestId() == Integer.parseInt(str)) {
+                typeQ.add(q.getTypeQ());
+                questionsText.add(q.getText());
+                answersText = new ArrayList();
 
                 for (int i = 0; i < answer.size(); i++) {
                     if(q.getId() == answer.get(i).getQuestion().getId()) {
