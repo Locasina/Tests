@@ -21,7 +21,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 
 public class TestListViewCard extends ListItem {
 
-    public TestListViewCard(String text, String title, String subTitle, String testID, int state, int id) {
+    public TestListViewCard(String text, String title, String subTitle, int state, int id) {
         addClassNames(Background.CONTRAST_5, Display.FLEX, FlexDirection.COLUMN, AlignItems.START, Padding.MEDIUM,
                 BorderRadius.LARGE);
 

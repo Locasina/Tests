@@ -1,5 +1,8 @@
 package com.example.application.views.imagelist;
 
+import com.example.application.data.entity.AvailableTest;
+import com.example.application.data.repository.AvailableTestRepository;
+import com.example.application.security.SecurityService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
@@ -11,6 +14,8 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -22,22 +27,23 @@ import com.vaadin.flow.theme.lumo.LumoUtility.MaxWidth;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 @PermitAll
 @PageTitle("Tests List")
 @Route(value = "tests-list", layout = MainLayout.class)
-public class TestsListView extends Main implements HasComponents, HasStyle {
+public class TestsListView extends Main implements HasComponents, HasStyle , BeforeEnterObserver {
     private OrderedList testCardContainer;
-
-
+    @Autowired
+    AvailableTestRepository availableTestRepository;
+    @Autowired
+    SecurityService securityService;
     public TestsListView() {
         constructUI();
-        testCardContainer.add(new TestListViewCard("Economy Test 1","Economy Test 1","Economy Test 1", "test", 0,1));
-        testCardContainer.add(new TestListViewCard("Economy Test 2", "Economy Test 2", "Economy Test 1", "test",0,2));
-        testCardContainer.add(new TestListViewCard("Java Test 1", "Java Test 1", "Economy Test 1", "test", 2,3));
-        testCardContainer.add(new TestListViewCard("Java Test 2", "Java Test 2", "Economy Test 1", "test", 1,4));
     }
 
     private void constructUI() {
@@ -60,10 +66,20 @@ public class TestsListView extends Main implements HasComponents, HasStyle {
         testCardContainer = new OrderedList();
         testCardContainer.addClassNames(Gap.MEDIUM, Display.GRID, ListStyleType.NONE, Margin.NONE, Padding.NONE);
 
-
-
         container.add(headerContainer, sortBy);
         add(container, testCardContainer);
+
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        testCardContainer.removeAll();
+
+        List<AvailableTest> e = availableTestRepository.findByUserUsername(securityService.getAuthenticatedUser().getUsername());
+        for (AvailableTest x:
+             e) {
+            testCardContainer.add(new TestListViewCard(x.getTest().getText(),x.getTest().getTitle(),x.getTest().getSubtitle(),x.getState(),x.getTest().getId()));
+        }
 
     }
 }

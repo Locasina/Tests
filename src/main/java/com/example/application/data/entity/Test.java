@@ -15,4 +15,6 @@ public class Test {
 
     private Integer Id;
     private String text;
+    private String title;
+    private String subtitle;
 }
