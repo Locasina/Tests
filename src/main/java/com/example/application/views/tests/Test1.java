@@ -94,8 +94,6 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
     public Test1() {
 
-
-
         getContent().setHeightFull();
         getContent().setWidthFull();
 
@@ -151,13 +149,13 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     }
 
     private void update(){
-        h1.setText(i + "/" + numberOfQ);                                          //           ЗАВ
-        radioGroup.setLabel(cc.questionsText.get(i-1));                               //
-        radioGroup.setItems(cc.answers.get(i));                                   //            ОТ
-        radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);             //
-        layoutRow.setWidthFull();                                                 //           typeQ
-        getContent().setFlexGrow(1.0, layoutRow);                         //
-        layoutRow.addClassName(Gap.MEDIUM);                                       //
+        h1.setText(i + "/" + numberOfQ);
+        radioGroup.setLabel(cc.questionsText.get(i-1));
+        radioGroup.setItems(cc.answers.get(i));
+        radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+        layoutRow.setWidthFull();
+        getContent().setFlexGrow(1.0, layoutRow);
+        layoutRow.addClassName(Gap.MEDIUM);
 
         nextButton.setText("next");
         nextButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
