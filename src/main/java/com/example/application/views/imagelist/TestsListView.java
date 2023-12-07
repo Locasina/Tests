@@ -37,6 +37,7 @@ import static com.vaadin.flow.theme.lumo.LumoUtility.*;
 @PageTitle("Tests List")
 @Route(value = "tests-list", layout = MainLayout.class)
 public class TestsListView extends Main implements HasComponents, HasStyle , BeforeEnterObserver {
+
     private OrderedList testCardContainer;
     @Autowired
     AvailableTestRepository availableTestRepository;

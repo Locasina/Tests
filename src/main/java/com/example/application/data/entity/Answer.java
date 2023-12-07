@@ -18,6 +18,13 @@ public class Answer {
 
     private String text;
 
+    @Override
+    public String toString(){
+        return text;
+    }
+
+
+
 
 
 }

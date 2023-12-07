@@ -20,6 +20,7 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+import elemental.json.impl.JsonUtil;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,15 +34,19 @@ import java.util.stream.StreamSupport;
 public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObserver{
 
     @Autowired
-    SecurityService securityService;
-    @Autowired
-    private TestRepository testRepository;
-    @Autowired
     private QuestionRepository questionRepository;
     @Autowired
     private AnswerRepository answerRepository;
 
-//    static Map<String, List<String>> parametersMap;
+    @Autowired
+    SecurityService securityService;
+    @Autowired
+    private TestRepository testRepository;
+    List<Question> questions;
+    List<List<Answer>> answers;
+
+
+
 
     ComponentController cc;
 
@@ -55,9 +60,6 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     HorizontalLayout layoutRow2 = new HorizontalLayout();
 
     Map <Integer, String> chosenOptions = new HashMap<>();
-    List<Question> questions;
-    List<Answer> answers;
-
      String option;
      int i;
      int numberOfQ;
@@ -70,31 +72,29 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+
         i = 1;
-        testID = beforeEnterEvent.getRouteParameters().get("testID").get();
-         questions =
-                StreamSupport.stream(questionRepository.findAll().spliterator(), false)
+
+        testID =beforeEnterEvent.getRouteParameters().get("testID").get();
+
+        questions =
+                StreamSupport.stream(questionRepository.findByTestId(Integer.parseInt(testID)).spliterator(), false)
                         .collect(Collectors.toList());
-         answers =
-                StreamSupport.stream(answerRepository.findAll().spliterator(), false)
-                        .collect(Collectors.toList());
+        answers = new ArrayList<>();
+        for(Question q: questions){
+            answers.add(answerRepository.findByQuestionId(q.getId()));
+        }
+
         System.out.println(questions);
-        System.out.println(answers);
 
-        cc = new ComponentController(questions, answers, testID);
-        System.out.println(cc.questionsText);
-        System.out.println(cc.answers);              //cb посредник, надо куда-то сдыбрить код из него
-        numberOfQ = cc.questionsText.size();
+        numberOfQ = questions.size();
+        System.out.println(questions.get(0).getAnswers().toString());
+
         update();
-        System.out.println(cc.answers.get(2));
-
     }
 
 
-
     public Test1() {
-
-
 
         getContent().setHeightFull();
         getContent().setWidthFull();
@@ -102,7 +102,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
         radioGroup.addValueChangeListener(event -> {
             if(event.getValue()!= null){
-                option = (String) event.getValue();
+                option =  event.getValue().toString();
             }
         });
 
@@ -123,6 +123,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
                 if (option != null)
                     chosenOptions.put(i, option);
                 i--;
+
                 previousQuestion(radioGroup);
                 option = null;
             }
@@ -130,16 +131,15 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
         });
 
     }
-    private void nextQuestion(RadioButtonGroup radioGroup){                 //дб не с АРГ, а с проверкой на typeQ
-        radioGroup.setLabel(cc.questionsText.get(i-1));
-        radioGroup.setItems(cc.answers.get(i));
+    private void nextQuestion(RadioButtonGroup radioGroup){
+        radioGroup.setLabel(questions.get(i-1).getText());
+        radioGroup.setItems(answers.get(i-1));
         choiceNotifier(radioGroup);
-        System.out.println(questions.get(i-1).getTypeQ());
     }
 
-    private void previousQuestion(RadioButtonGroup radioGroup){             //дб не с АРГ, а с проверкой на typeQ
-        radioGroup.setLabel(cc.questionsText.get(i-1));
-        radioGroup.setItems(cc.answers.get(i));
+    private void previousQuestion(RadioButtonGroup radioGroup){
+        radioGroup.setLabel(questions.get(i-1).getText());
+        radioGroup.setItems(answers.get(i-1));
         choiceNotifier(radioGroup);
 
     }
@@ -151,13 +151,13 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     }
 
     private void update(){
-        h1.setText(i + "/" + numberOfQ);                                          //           ЗАВ
-        radioGroup.setLabel(cc.questionsText.get(i-1));                               //
-        radioGroup.setItems(cc.answers.get(i));                                   //            ОТ
-        radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);             //
-        layoutRow.setWidthFull();                                                 //           typeQ
-        getContent().setFlexGrow(1.0, layoutRow);                         //
-        layoutRow.addClassName(Gap.MEDIUM);                                       //
+        h1.setText(i + "/" + numberOfQ);
+        radioGroup.setLabel(questions.get(i-1).getText());
+        radioGroup.setItems(answers.get(i-1));
+        radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+        layoutRow.setWidthFull();
+        getContent().setFlexGrow(1.0, layoutRow);
+        layoutRow.addClassName(Gap.MEDIUM);
 
         nextButton.setText("next");
         nextButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -170,10 +170,12 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
         getContent().add(h1);
         getContent().add(radioGroup);
         getContent().add(layoutRow);
-        layoutRow.add(nextButton);
         layoutRow.add(previousButton);
+        layoutRow.add(nextButton);
         getContent().add(layoutRow2);
+
     }
+
 
 
 
