@@ -12,6 +12,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -20,11 +21,14 @@ import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
-import elemental.json.impl.JsonUtil;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
+import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.vaadin.flow.component.textfield.TextField;
 
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -65,6 +69,8 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
      int numberOfQ;
 
     RadioButtonGroup radioGroup = new RadioButtonGroup();
+    CheckboxGroup checkboxGroup = new CheckboxGroup();
+    TextField textField = new TextField();
 
     MultiSelectListBox optionsColumn1 = new MultiSelectListBox();
 
@@ -112,7 +118,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
                     chosenOptions.put(i, option);
                 i++;
 
-                nextQuestion(radioGroup);
+                nextQuestion();
                 option = null;
             }
             h1.setText(i + "/" + numberOfQ);
@@ -124,37 +130,81 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
                     chosenOptions.put(i, option);
                 i--;
 
-                previousQuestion(radioGroup);
+                previousQuestion();
                 option = null;
             }
             h1.setText(i + "/" + numberOfQ);
         });
 
     }
-    private void nextQuestion(RadioButtonGroup radioGroup){
-        radioGroup.setLabel(questions.get(i-1).getText());
-        radioGroup.setItems(answers.get(i-1));
-        choiceNotifier(radioGroup);
+    private void nextQuestion(){
+//        if (questions.get(i-1).getTypeQ() == 1) {
+//            checkboxGroup.setVisible(false);
+//            radioGroup.setVisible(true);
+//            radioGroup.setLabel(questions.get(i - 1).getText());
+//            radioGroup.setItems(answers.get(i - 1));
+//        }
+//        if(questions.get(i-1).getTypeQ() == 2) {
+//            checkboxGroup.setVisible(true);
+//            radioGroup.setVisible(false);
+//            checkboxGroup.setLabel(questions.get(i - 1).getText());
+//            checkboxGroup.setItems(answers.get(i - 1));
+//        }
+//        if(questions.get(i-1).getTypeQ() == 3) {
+//            checkboxGroup.setVisible(false);
+//            radioGroup.setVisible(false);
+//            textField.setVisible(true);
+//        }
+        setAnswer(questions.get(i-1).getTypeQ());
+        choiceNotifier();
     }
 
-    private void previousQuestion(RadioButtonGroup radioGroup){
-        radioGroup.setLabel(questions.get(i-1).getText());
-        radioGroup.setItems(answers.get(i-1));
-        choiceNotifier(radioGroup);
+    private void previousQuestion(){
+//        if (questions.get(i-1).getTypeQ() == 1) { //вынести это в отдельный метод
+//            checkboxGroup.setVisible(false);
+//            radioGroup.setVisible(true);
+//            radioGroup.setLabel(questions.get(i - 1).getText());
+//            radioGroup.setItems(answers.get(i - 1));
+//        }
+//        if(questions.get(i-1).getTypeQ() == 2) {
+//            checkboxGroup.setVisible(true);
+//            radioGroup.setVisible(false);
+//            checkboxGroup.setLabel(questions.get(i - 1).getText());
+//            checkboxGroup.setItems(answers.get(i - 1));
+//        }
+        setAnswer(questions.get(i-1).getTypeQ());
+        choiceNotifier();
 
     }
-    private void choiceNotifier (RadioButtonGroup radioButtonGroup){
+    private void choiceNotifier (){
         if(chosenOptions.get(i)!=null){
-            radioButtonGroup.setValue(chosenOptions.get(i));
+            radioGroup.setValue(chosenOptions.get(i));
         }
 
     }
 
     private void update(){
         h1.setText(i + "/" + numberOfQ);
-        radioGroup.setLabel(questions.get(i-1).getText());
-        radioGroup.setItems(answers.get(i-1));
-        radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+        setAnswer(questions.get(i-1).getTypeQ());
+//        if(questions.get(i-1).getTypeQ() == 1) {
+//            checkboxGroup.setVisible(false);
+//            radioGroup.setVisible(true);
+//            radioGroup.setLabel(questions.get(i - 1).getText());
+//            radioGroup.setItems(answers.get(i - 1));
+//            radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+//        }
+//
+////        checkboxGroup.setWidth("min-content");
+//
+//        if(questions.get(i-1).getTypeQ() == 2) {
+//        checkboxGroup.setVisible(true);
+//        radioGroup.setVisible(false);
+//        checkboxGroup.setLabel(questions.get(i-1).getText());
+//        checkboxGroup.setItems((answers.get(i-1)));
+//        checkboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
+//        }
+
+        checkboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
         layoutRow.setWidthFull();
         getContent().setFlexGrow(1.0, layoutRow);
         layoutRow.addClassName(Gap.MEDIUM);
@@ -168,12 +218,38 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
         layoutRow2.addClassName(Gap.MEDIUM);
 
         getContent().add(h1);
+
         getContent().add(radioGroup);
+        getContent().add(checkboxGroup);
+        getContent().add(textField);
+
         getContent().add(layoutRow);
         layoutRow.add(previousButton);
         layoutRow.add(nextButton);
         getContent().add(layoutRow2);
 
+    }
+    private void setAnswer (int n) {
+        if (n == 1) {
+            checkboxGroup.setVisible(false);
+            radioGroup.setVisible(true);
+            textField.setVisible(false);
+            radioGroup.setLabel(questions.get(i - 1).getText());
+            radioGroup.setItems(answers.get(i - 1));
+        }
+        if(n == 2) {
+            checkboxGroup.setVisible(true);
+            radioGroup.setVisible(false);
+            textField.setVisible(false);
+            checkboxGroup.setLabel(questions.get(i - 1).getText());
+            checkboxGroup.setItems(answers.get(i - 1));
+        }
+        if(n == 3) {
+            checkboxGroup.setVisible(false);
+            radioGroup.setVisible(false);
+            textField.setVisible(true);
+            textField.setLabel(questions.get(i - 1).getText());
+        }
     }
 
 
