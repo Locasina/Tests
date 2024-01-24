@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class MultiChoiceAnswer {
+public class ComparisonAnswer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;

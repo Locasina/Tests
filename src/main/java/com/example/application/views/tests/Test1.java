@@ -7,22 +7,22 @@ import com.example.application.data.repository.QuestionRepository;
 import com.example.application.data.repository.TestRepository;
 import com.example.application.security.SecurityService;
 import com.example.application.views.MainLayout;
+import com.example.application.views.imagelist.TestSupport;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
-import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
-import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.vaadin.flow.component.textfield.TextField;
@@ -35,7 +35,7 @@ import java.util.stream.StreamSupport;
 @PageTitle("test")
 @PermitAll
 @Route(value = "test/:testID", layout = MainLayout.class)
-public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObserver{
+public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObserver {
 
     @Autowired
     private QuestionRepository questionRepository;
@@ -48,33 +48,28 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     private TestRepository testRepository;
     List<Question> questions;
     List<List<Answer>> answers;
-
-
-
-
-    ComponentController cc;
-
+    private String option;
+    protected int i;
+    private int numberOfQ;
     private String testID;
+    private H1 h1 = new H1();
+    protected H1 h2 = new H1();
+    private HorizontalLayout layoutRow = new HorizontalLayout();
+    private Button nextButton = new Button();
+    private Button previousButton = new Button();
+    private HorizontalLayout layoutRow2 = new HorizontalLayout();
 
-    H1 h1 = new H1();
+    protected Map <Integer, String> chosenOptions = new HashMap<>();
+//    TestSupport t1 = new TestSupport();
+//    Thread thread = new Thread(t1);
 
-    HorizontalLayout layoutRow = new HorizontalLayout();
-    Button nextButton = new Button();
-    Button previousButton = new Button();
-    HorizontalLayout layoutRow2 = new HorizontalLayout();
 
-    Map <Integer, String> chosenOptions = new HashMap<>();
-     String option;
-     int i;
-     int numberOfQ;
+    private RadioButtonGroup radioGroup = new RadioButtonGroup();
+    private CheckboxGroup checkboxGroup = new CheckboxGroup();
+    private TextField textField = new TextField();
 
-    RadioButtonGroup radioGroup = new RadioButtonGroup();
-    CheckboxGroup checkboxGroup = new CheckboxGroup();
-    TextField textField = new TextField();
 
-    MultiSelectListBox optionsColumn1 = new MultiSelectListBox();
 
-    MultiSelectListBox optionsColumn2 = new MultiSelectListBox();
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
@@ -91,12 +86,12 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             answers.add(answerRepository.findByQuestionId(q.getId()));
         }
 
-        System.out.println(questions);
-
         numberOfQ = questions.size();
-        System.out.println(questions.get(0).getAnswers().toString());
 
         update();
+
+
+
     }
 
 
@@ -104,105 +99,73 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
         getContent().setHeightFull();
         getContent().setWidthFull();
+//        thread.start();
 
 
         radioGroup.addValueChangeListener(event -> {
+            System.out.println("VCL worked");
             if(event.getValue()!= null){
                 option =  event.getValue().toString();
+                System.out.println("VCL's (if) just worked");
             }
         });
 
         nextButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
             if (i < numberOfQ) {
-                if (option != null)
+                if (option != null) {
+                    System.out.println("nxtbut listener");
                     chosenOptions.put(i, option);
-                i++;
+                    System.out.println("value's saved and cleared");
+                    option = null;
 
-                nextQuestion();
-                option = null;
+                }
+                i++;
+                System.out.println("i raised");
+
+                setQuestion();
+
             }
             h1.setText(i + "/" + numberOfQ);
         });
 
         previousButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
             if (i>1) {
-                if (option != null)
+                if (option != null) {
+                    System.out.println("prevbut listener");
                     chosenOptions.put(i, option);
+                    System.out.println("value's saved and cleared");
+                    option = null;
+                }
                 i--;
+                System.out.println("i decreased");
 
-                previousQuestion();
-                option = null;
+                setQuestion();
+
             }
             h1.setText(i + "/" + numberOfQ);
         });
 
     }
-    private void nextQuestion(){
-//        if (questions.get(i-1).getTypeQ() == 1) {
-//            checkboxGroup.setVisible(false);
-//            radioGroup.setVisible(true);
-//            radioGroup.setLabel(questions.get(i - 1).getText());
-//            radioGroup.setItems(answers.get(i - 1));
-//        }
-//        if(questions.get(i-1).getTypeQ() == 2) {
-//            checkboxGroup.setVisible(true);
-//            radioGroup.setVisible(false);
-//            checkboxGroup.setLabel(questions.get(i - 1).getText());
-//            checkboxGroup.setItems(answers.get(i - 1));
-//        }
-//        if(questions.get(i-1).getTypeQ() == 3) {
-//            checkboxGroup.setVisible(false);
-//            radioGroup.setVisible(false);
-//            textField.setVisible(true);
-//        }
-        setAnswer(questions.get(i-1).getTypeQ());
-        choiceNotifier();
-    }
-
-    private void previousQuestion(){
-//        if (questions.get(i-1).getTypeQ() == 1) { //вынести это в отдельный метод
-//            checkboxGroup.setVisible(false);
-//            radioGroup.setVisible(true);
-//            radioGroup.setLabel(questions.get(i - 1).getText());
-//            radioGroup.setItems(answers.get(i - 1));
-//        }
-//        if(questions.get(i-1).getTypeQ() == 2) {
-//            checkboxGroup.setVisible(true);
-//            radioGroup.setVisible(false);
-//            checkboxGroup.setLabel(questions.get(i - 1).getText());
-//            checkboxGroup.setItems(answers.get(i - 1));
-//        }
-        setAnswer(questions.get(i-1).getTypeQ());
+    private void setQuestion(){
+        System.out.println("setAnswer goes");
+        setAnswers(questions.get(i-1).getTypeQ());
         choiceNotifier();
 
     }
     private void choiceNotifier (){
         if(chosenOptions.get(i)!=null){
+            System.out.println("ATTENTION! Value is setting");
             radioGroup.setValue(chosenOptions.get(i));
+
         }
 
     }
 
     private void update(){
         h1.setText(i + "/" + numberOfQ);
-        setAnswer(questions.get(i-1).getTypeQ());
-//        if(questions.get(i-1).getTypeQ() == 1) {
-//            checkboxGroup.setVisible(false);
-//            radioGroup.setVisible(true);
-//            radioGroup.setLabel(questions.get(i - 1).getText());
-//            radioGroup.setItems(answers.get(i - 1));
-//            radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
-//        }
-//
-////        checkboxGroup.setWidth("min-content");
-//
-//        if(questions.get(i-1).getTypeQ() == 2) {
-//        checkboxGroup.setVisible(true);
-//        radioGroup.setVisible(false);
-//        checkboxGroup.setLabel(questions.get(i-1).getText());
-//        checkboxGroup.setItems((answers.get(i-1)));
-//        checkboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
-//        }
+        setAnswers(questions.get(i-1).getTypeQ());
+        h2.setText(chosenOptions.get(i));
+
 
         checkboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
         layoutRow.setWidthFull();
@@ -227,14 +190,17 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
         layoutRow.add(previousButton);
         layoutRow.add(nextButton);
         getContent().add(layoutRow2);
+        getContent().add(h2);
+
 
     }
-    private void setAnswer (int n) {
+    private void setAnswers(int n) {
         if (n == 1) {
             checkboxGroup.setVisible(false);
             radioGroup.setVisible(true);
             textField.setVisible(false);
             radioGroup.setLabel(questions.get(i - 1).getText());
+            System.out.println("set items is working");
             radioGroup.setItems(answers.get(i - 1));
         }
         if(n == 2) {
@@ -243,6 +209,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             textField.setVisible(false);
             checkboxGroup.setLabel(questions.get(i - 1).getText());
             checkboxGroup.setItems(answers.get(i - 1));
+            System.out.println("set items is working");
         }
         if(n == 3) {
             checkboxGroup.setVisible(false);
@@ -250,7 +217,16 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             textField.setVisible(true);
             textField.setLabel(questions.get(i - 1).getText());
         }
+        if(n ==4){
+            checkboxGroup.setVisible(false);
+            radioGroup.setVisible(false);
+            textField.setVisible(false);
+
+
+        }
     }
+
+
 
 
 
