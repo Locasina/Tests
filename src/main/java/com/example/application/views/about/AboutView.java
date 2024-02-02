@@ -1,34 +1,75 @@
 package com.example.application.views.about;
 
+import com.example.application.data.entity.AvailableTest;
 import com.example.application.views.MainLayout;
+import com.example.application.views.imagelist.TestListViewCard;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.OrderedList;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
+import jakarta.annotation.security.PermitAll;
+
+import java.util.List;
 
 @PageTitle("About")
 @Route(value = "about", layout = MainLayout.class)
-public class AboutView extends VerticalLayout {
+@PermitAll
+public class AboutView extends VerticalLayout implements BeforeEnterObserver {
+    Button plusButton = new Button(new Icon(VaadinIcon.PLUS));
 
     public AboutView() {
-        setSpacing(false);
+        plusButton.addThemeVariants(ButtonVariant.LUMO_ICON);
+        plusButton.setAriaLabel("Add item");
 
-        Image img = new Image("images/empty-plant.png", "placeholder plant");
-        img.setWidth("200px");
-        add(img);
+        constructUI();
 
-        H2 header = new H2("This place intentionally left empty");
-        header.addClassNames(Margin.Top.XLARGE, Margin.Bottom.MEDIUM);
-        add(header);
-        add(new Paragraph("It’s a place where you can grow your own UI 🤗"));
+    }
+    private OrderedList testCardContainer;
 
-        setSizeFull();
-        setJustifyContentMode(JustifyContentMode.CENTER);
-        setDefaultHorizontalComponentAlignment(Alignment.CENTER);
-        getStyle().set("text-align", "center");
+    private void constructUI() {
+        addClassNames("image-list-view");
+        addClassNames(LumoUtility.MaxWidth.SCREEN_LARGE, Margin.Horizontal.AUTO, LumoUtility.Padding.Bottom.LARGE, LumoUtility.Padding.Horizontal.LARGE);
+
+        HorizontalLayout container = new HorizontalLayout();
+        container.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.BETWEEN);
+
+        VerticalLayout headerContainer = new VerticalLayout();
+        H2 header = new H2("Available tests");
+        header.addClassNames(Margin.Bottom.NONE, Margin.Top.XLARGE, LumoUtility.FontSize.XXXLARGE);
+        headerContainer.add(header);
+
+        Select<String> sortBy = new Select<>();
+        sortBy.setLabel("Sort by");
+        sortBy.setItems("Popularity", "Newest first", "Oldest first");
+        sortBy.setValue("Popularity");
+
+        testCardContainer = new OrderedList();
+        testCardContainer.addClassNames(LumoUtility.Gap.MEDIUM, LumoUtility.Display.GRID, LumoUtility.ListStyleType.NONE, Margin.NONE, LumoUtility.Padding.NONE);
+
+        container.add(headerContainer, plusButton);
+        add(container, testCardContainer);
+
     }
 
+    @Override
+    public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
+        testCardContainer.removeAll();
+        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4, plusButton));
+
+
+    }
 }
+

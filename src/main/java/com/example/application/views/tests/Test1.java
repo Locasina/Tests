@@ -1,11 +1,14 @@
 package com.example.application.views.tests;
 
 import com.example.application.data.entity.Answer;
+import com.example.application.data.entity.MultiChoiceAnswer;
 import com.example.application.data.entity.Question;
 import com.example.application.data.repository.AnswerRepository;
+import com.example.application.data.repository.MultiChoiceAnswerRepository;
 import com.example.application.data.repository.QuestionRepository;
 import com.example.application.data.repository.TestRepository;
 import com.example.application.security.SecurityService;
+import com.example.application.service.TestService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -36,38 +39,23 @@ import java.util.stream.StreamSupport;
 @PermitAll
 @Route(value = "test/:testID", layout = MainLayout.class)
 public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObserver{
-
     @Autowired
-    private QuestionRepository questionRepository;
-    @Autowired
-    private AnswerRepository answerRepository;
-
+    private TestService service;
     @Autowired
     SecurityService securityService;
-    @Autowired
-    private TestRepository testRepository;
     List<Question> questions;
     List<List<Answer>> answers;
-
-
-
-
-    ComponentController cc;
-
+    List<List<MultiChoiceAnswer>> multiChoiceAnswer = new ArrayList<>();
     private String testID;
-
     H1 h1 = new H1();
-
     HorizontalLayout layoutRow = new HorizontalLayout();
     Button nextButton = new Button();
     Button previousButton = new Button();
     HorizontalLayout layoutRow2 = new HorizontalLayout();
-
     Map <Integer, String> chosenOptions = new HashMap<>();
      String option;
      int i;
      int numberOfQ;
-
     RadioButtonGroup radioGroup = new RadioButtonGroup();
     CheckboxGroup checkboxGroup = new CheckboxGroup();
     TextField textField = new TextField();
@@ -80,21 +68,10 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
 
         i = 1;
-
-        testID =beforeEnterEvent.getRouteParameters().get("testID").get();
-
-        questions =
-                StreamSupport.stream(questionRepository.findByTestId(Integer.parseInt(testID)).spliterator(), false)
-                        .collect(Collectors.toList());
-        answers = new ArrayList<>();
-        for(Question q: questions){
-            answers.add(answerRepository.findByQuestionId(q.getId()));
-        }
-
-        System.out.println(questions);
-
+        testID = beforeEnterEvent.getRouteParameters().get("testID").get();
+        questions = service.questionRepository.findByTestId(Integer.parseInt(testID));
+        answers = service.getAlltestAnswer(Integer.valueOf(testID));
         numberOfQ = questions.size();
-        System.out.println(questions.get(0).getAnswers().toString());
 
         update();
     }
@@ -138,40 +115,11 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
     }
     private void nextQuestion(){
-//        if (questions.get(i-1).getTypeQ() == 1) {
-//            checkboxGroup.setVisible(false);
-//            radioGroup.setVisible(true);
-//            radioGroup.setLabel(questions.get(i - 1).getText());
-//            radioGroup.setItems(answers.get(i - 1));
-//        }
-//        if(questions.get(i-1).getTypeQ() == 2) {
-//            checkboxGroup.setVisible(true);
-//            radioGroup.setVisible(false);
-//            checkboxGroup.setLabel(questions.get(i - 1).getText());
-//            checkboxGroup.setItems(answers.get(i - 1));
-//        }
-//        if(questions.get(i-1).getTypeQ() == 3) {
-//            checkboxGroup.setVisible(false);
-//            radioGroup.setVisible(false);
-//            textField.setVisible(true);
-//        }
         setAnswer(questions.get(i-1).getTypeQ());
         choiceNotifier();
     }
 
     private void previousQuestion(){
-//        if (questions.get(i-1).getTypeQ() == 1) { //вынести это в отдельный метод
-//            checkboxGroup.setVisible(false);
-//            radioGroup.setVisible(true);
-//            radioGroup.setLabel(questions.get(i - 1).getText());
-//            radioGroup.setItems(answers.get(i - 1));
-//        }
-//        if(questions.get(i-1).getTypeQ() == 2) {
-//            checkboxGroup.setVisible(true);
-//            radioGroup.setVisible(false);
-//            checkboxGroup.setLabel(questions.get(i - 1).getText());
-//            checkboxGroup.setItems(answers.get(i - 1));
-//        }
         setAnswer(questions.get(i-1).getTypeQ());
         choiceNotifier();
 
@@ -186,23 +134,6 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     private void update(){
         h1.setText(i + "/" + numberOfQ);
         setAnswer(questions.get(i-1).getTypeQ());
-//        if(questions.get(i-1).getTypeQ() == 1) {
-//            checkboxGroup.setVisible(false);
-//            radioGroup.setVisible(true);
-//            radioGroup.setLabel(questions.get(i - 1).getText());
-//            radioGroup.setItems(answers.get(i - 1));
-//            radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
-//        }
-//
-////        checkboxGroup.setWidth("min-content");
-//
-//        if(questions.get(i-1).getTypeQ() == 2) {
-//        checkboxGroup.setVisible(true);
-//        radioGroup.setVisible(false);
-//        checkboxGroup.setLabel(questions.get(i-1).getText());
-//        checkboxGroup.setItems((answers.get(i-1)));
-//        checkboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
-//        }
 
         checkboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
         layoutRow.setWidthFull();
@@ -250,9 +181,6 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             textField.setVisible(true);
             textField.setLabel(questions.get(i - 1).getText());
         }
+
     }
-
-
-
-
 }
