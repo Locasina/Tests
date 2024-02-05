@@ -1,7 +1,7 @@
 package com.example.application.views;
 
 import com.example.application.security.SecurityService;
-import  com.example.application.views.about.AboutView;
+import com.example.application.views.about.AboutView;
 import com.example.application.views.helloworld.HelloWorldView;
 import com.example.application.views.imagelist.TestsListView;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -11,7 +11,6 @@ import com.vaadin.flow.component.html.Footer;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
@@ -25,7 +24,7 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
  * The main view is a top-level placeholder for other views.
  */
 public class MainLayout extends AppLayout {
-    private SecurityService securityService;
+    private final SecurityService securityService;
 
     private H2 viewTitle;
 
@@ -68,7 +67,7 @@ public class MainLayout extends AppLayout {
         SideNav nav = new SideNav();
 
         nav.addItem(new SideNavItem("Hello World", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
-        nav.addItem(new SideNavItem("About", AboutView.class, LineAwesomeIcon.FILE.create()));
+        nav.addItem(new SideNavItem("My tests", AboutView.class, LineAwesomeIcon.FILE.create()));
         nav.addItem(new SideNavItem("Test List", TestsListView.class, LineAwesomeIcon.TH_LIST_SOLID.create()));
 
         return nav;

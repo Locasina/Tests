@@ -1,14 +1,13 @@
 package com.example.application.views.about;
 
-import com.example.application.data.entity.AvailableTest;
 import com.example.application.views.MainLayout;
-import com.example.application.views.imagelist.TestListViewCard;
+import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.html.OrderedList;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -22,12 +21,10 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import jakarta.annotation.security.PermitAll;
 
-import java.util.List;
-
 @PageTitle("About")
 @Route(value = "about", layout = MainLayout.class)
 @PermitAll
-public class AboutView extends VerticalLayout implements BeforeEnterObserver {
+public class AboutView extends Main implements HasComponents, HasStyle, BeforeEnterObserver{
     Button plusButton = new Button(new Icon(VaadinIcon.PLUS));
 
     public AboutView() {
@@ -59,17 +56,21 @@ public class AboutView extends VerticalLayout implements BeforeEnterObserver {
         testCardContainer = new OrderedList();
         testCardContainer.addClassNames(LumoUtility.Gap.MEDIUM, LumoUtility.Display.GRID, LumoUtility.ListStyleType.NONE, Margin.NONE, LumoUtility.Padding.NONE);
 
-        container.add(headerContainer, plusButton);
-        add(container, testCardContainer);
+        container.add(headerContainer, sortBy);
+        add(container, new VerticalLayout(plusButton), testCardContainer);
 
     }
 
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         testCardContainer.removeAll();
-        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4, plusButton));
-
-
+        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
+        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
+        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
+        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
+        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
+        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
+        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
     }
 }
 

@@ -1,7 +1,6 @@
 package com.example.application.views.about;
 
 import com.example.application.views.tests.Test1;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
@@ -10,10 +9,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.*;
 
 public class CreateTestCard extends ListItem {
 
-    public CreateTestCard(String text, String title, String subTitle, int state, int id, Button button) {
-        if(id == 3)
-            add(button);
-        else {
+    public CreateTestCard(String text, String title, String subTitle, int state, int id) {
             addClassNames(Background.CONTRAST_5, Display.FLEX, FlexDirection.COLUMN, AlignItems.START, Padding.MEDIUM,
                     BorderRadius.LARGE);
 
@@ -48,33 +44,7 @@ public class CreateTestCard extends ListItem {
                 badge.getElement().setAttribute("theme", "badge");
                 badge.setText("Passed");
             }
-
             add(header, subtitle, description, badge);
-        }
-
     }
-    public CreateTestCard(Button button){
-        addClassNames(Background.CONTRAST_5, Display.FLEX, FlexDirection.COLUMN, AlignItems.START, Padding.MEDIUM,
-                BorderRadius.LARGE);
 
-        Span header = new Span();
-        header.addClassNames(FontSize.XLARGE, FontWeight.SEMIBOLD);
-        header.setText("");
-
-        Span subtitle = new Span();
-        subtitle.addClassNames(FontSize.SMALL, TextColor.SECONDARY);
-        subtitle.setText("subTitle");
-
-        Paragraph description = new Paragraph("text");
-        description.addClassName(Margin.Vertical.MEDIUM);
-
-        Span badge = new Span();
-
-        badge.getElement().setAttribute("theme", "badge");
-        badge.setText("Not passed");
-
-        badge.setText("Confirmed");
-        badge.getElement().getThemeList().add("badge success");
-        add(button);
-    }
 }
