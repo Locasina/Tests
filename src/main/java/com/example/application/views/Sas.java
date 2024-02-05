@@ -2,11 +2,8 @@ package com.example.application.views;
 
 
 
-import com.example.application.data.entity.Answer;
-import com.example.application.data.entity.MultiChoiceAnswer;
-import com.example.application.data.entity.Question;
 import com.example.application.data.repository.AnswerRepository;
-import com.example.application.data.repository.MultiChoiceAnswerRepository;
+import com.example.application.data.repository.ComparisonAnswerRepository;
 import com.example.application.data.repository.QuestionRepository;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.dependency.Uses;
@@ -22,8 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @PageTitle("My View")
 @Route(value = "sas", layout = MainLayout.class)
@@ -36,7 +31,7 @@ public class Sas extends Composite<VerticalLayout> implements BeforeEnterObserve
     @Autowired
     QuestionRepository questionRepository;
     @Autowired
-    MultiChoiceAnswerRepository mcaRepo;
+    ComparisonAnswerRepository mcaRepo;
 
     public Sas() {
 

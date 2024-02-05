@@ -22,4 +22,12 @@ public class Question {
     @OneToMany(fetch = FetchType.EAGER, targetEntity = Answer.class, cascade = CascadeType.ALL)
     @Column(name = "question_id")
     private List<Answer> answers;
+
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = ComparisonAnswer.class, cascade = CascadeType.ALL)
+    @Column(name = "question_id")
+    private List<ComparisonAnswer> comparisonAnswers;
+
+
+
+
 }
