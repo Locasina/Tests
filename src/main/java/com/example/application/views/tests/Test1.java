@@ -7,6 +7,7 @@ import com.example.application.data.repository.AnswerRepository;
 import com.example.application.data.repository.ComparisonAnswerRepository;
 import com.example.application.data.repository.QuestionRepository;
 import com.example.application.security.SecurityService;
+import com.example.application.service.TestService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -32,9 +33,10 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @PageTitle("test")
 @PermitAll
@@ -45,6 +47,8 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     private QuestionRepository questionRepository;
     @Autowired
     private AnswerRepository answerRepository;
+    @Autowired
+    private TestService testService;
 
     @Autowired
     SecurityService securityService;
@@ -57,20 +61,20 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     protected int i;
     private int numberOfQ;
     private String testID;
-    private H1 h1 = new H1();
-    private H2 h2 = new H2();
-    private H4 h4 = new H4();
-    private HorizontalLayout layoutRow = new HorizontalLayout();
-    private HorizontalLayout layoutRow2 = new HorizontalLayout();
-    private HorizontalLayout answersLayout = new HorizontalLayout();
-    private Button nextButton = new Button();
-    private Button previousButton = new Button();
+    private final H1 h1 = new H1();
+    private final H2 h2 = new H2();
+    private final H4 h4 = new H4();
+    private final HorizontalLayout layoutRow = new HorizontalLayout();
+    private final HorizontalLayout layoutRow2 = new HorizontalLayout();
+    private final HorizontalLayout answersLayout = new HorizontalLayout();
+    private final Button nextButton = new Button();
+    private final Button previousButton = new Button();
     protected Map <Integer, String> chosenOptions = new HashMap<>();
-    private RadioButtonGroup radioGroup = new RadioButtonGroup();
-    private CheckboxGroup checkboxGroup = new CheckboxGroup();
-    private TextField textField = new TextField();
-    private Grid<ComparisonAnswer> grid = new Grid<>(ComparisonAnswer.class, false);
-    private Grid<ComparisonAnswer> grid2 = new Grid<>(ComparisonAnswer.class, false);
+    private final RadioButtonGroup radioGroup = new RadioButtonGroup();
+    private final CheckboxGroup checkboxGroup = new CheckboxGroup();
+    private final TextField textField = new TextField();
+    private final Grid<ComparisonAnswer> grid = new Grid<>(ComparisonAnswer.class, false);
+    private final Grid<ComparisonAnswer> grid2 = new Grid<>(ComparisonAnswer.class, false);
     private Map<Integer, List<ComparisonAnswer>> compAnswers;
     ComparisonAnswer draggedItem;
 
@@ -80,20 +84,15 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
         i = 1;
         int j =1;
-
-
         testID =beforeEnterEvent.getRouteParameters().get("testID").get();
-
-        questions =
-                StreamSupport.stream(questionRepository.findByTestId(Integer.parseInt(testID)).spliterator(), false)
-                        .collect(Collectors.toList());
-        answers = new ArrayList<>();
+        questions = testService.questionRepository.findByTestId(Integer.parseInt(testID));
+        answers = testService.getAlltestAnswer(Integer.parseInt(testID));
         compAnswers = new HashMap<>();
+
         for(Question q: questions){
             if(q.getTypeQ()==4) {
                 compAnswers.put(j, comparisonAnswerRepository.findByQuestionId(q.getId()));
             } else {
-                answers.add(answerRepository.findByQuestionId(q.getId()));
                 compAnswers.put(j, null);
             }
             j++;
