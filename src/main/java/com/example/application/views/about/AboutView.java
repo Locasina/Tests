@@ -60,7 +60,6 @@ public class AboutView extends Main implements HasComponents, HasStyle, BeforeEn
         add(container, new VerticalLayout(plusButton), testCardContainer);
 
     }
-
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         testCardContainer.removeAll();

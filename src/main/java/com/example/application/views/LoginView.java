@@ -1,10 +1,6 @@
 package com.example.application.views;
 
-import com.example.application.data.entity.User;
-import com.example.application.data.repository.QuestionRepository;
-import com.example.application.data.repository.UserRepository;
 import com.example.application.security.SecurityService;
-import com.example.application.views.imagelist.TestsListView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.login.LoginForm;
@@ -20,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     private final LoginForm login = new LoginForm();
-    private SecurityService securityService;
+    private final SecurityService securityService;
 
 
     public LoginView(@Autowired SecurityService securityService){
