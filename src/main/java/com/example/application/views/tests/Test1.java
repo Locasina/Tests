@@ -6,33 +6,33 @@ import com.example.application.data.entity.Question;
 import com.example.application.data.repository.AnswerRepository;
 import com.example.application.data.repository.ComparisonAnswerRepository;
 import com.example.application.data.repository.QuestionRepository;
-import com.example.application.data.repository.TestRepository;
 import com.example.application.security.SecurityService;
 import com.example.application.views.MainLayout;
-import com.example.application.views.imagelist.TestSupport;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.dnd.GridDropMode;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H4;
-import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
-import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.vaadin.flow.component.textfield.TextField;
 
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -72,6 +72,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     private Grid<ComparisonAnswer> grid = new Grid<>(ComparisonAnswer.class, false);
     private Grid<ComparisonAnswer> grid2 = new Grid<>(ComparisonAnswer.class, false);
     private Map<Integer, List<ComparisonAnswer>> compAnswers;
+    ComparisonAnswer draggedItem;
 
 
     @Override
@@ -97,13 +98,8 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             }
             j++;
         }
-
         numberOfQ = questions.size();
-
         update();
-
-
-
     }
 
 
@@ -123,12 +119,10 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
                 if (option != null) {
                     chosenOptions.put(i, option);
                     option = null;
-
                 }
                 i++;
                 h4.setText(null);
                 setQuestion();
-
             }
             h1.setText(i + "/" + numberOfQ);
         });
@@ -142,12 +136,10 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
                 i--;
                 h4.setText(null);
                 setQuestion();
-
             }
             h1.setText(i + "/" + numberOfQ);
 
         });
-
     }
     private void setQuestion(){
         setAnswers(questions.get(i-1).getTypeQ());
@@ -169,8 +161,10 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
         grid.setAllRowsVisible(true);
         grid2.setAllRowsVisible(true);
-        grid.setSelectionMode(Grid.SelectionMode.NONE);
-        grid2.setSelectionMode(Grid.SelectionMode.NONE);
+        grid.setRowsDraggable(true);
+        grid.addColumn(ComparisonAnswer::getColumn1);
+        grid2.addColumn(ComparisonAnswer::getColumn2);
+        setGridDraggable(grid);
 
 
         checkboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
@@ -200,11 +194,9 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
         getContent().add(answersLayout);
         getContent().add(layoutRow);
+        getContent().add(layoutRow2);
         layoutRow.add(previousButton);
         layoutRow.add(nextButton);
-        getContent().add(layoutRow2);
-
-
 
     }
     private void setAnswers(int n) {
@@ -216,7 +208,6 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             radioGroup.setVisible(true);
 //            radioGroup.setLabel(questions.get(i - 1).getText());
             h2.setText(questions.get(i - 1).getText());
-
             radioGroup.setItems(answers.get(i - 1));
         }
         if(n == 2) {
@@ -228,7 +219,6 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 //            checkboxGroup.setLabel(questions.get(i - 1).getText());
             checkboxGroup.setItems(answers.get(i - 1));
             h2.setText(questions.get(i - 1).getText());
-
         }
         if(n == 3) {
             checkboxGroup.setVisible(false);
@@ -243,35 +233,39 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             checkboxGroup.setVisible(false);
             radioGroup.setVisible(false);
             textField.setVisible(false);
-            grid.addColumn(ComparisonAnswer::getColumn1);
-            grid2.addColumn(ComparisonAnswer::getColumn2);
             grid.setVisible(true);
             grid2.setVisible(true);
             grid.setItems(compAnswers.get(i));
             grid2.setItems(compAnswers.get(i));
             h2.setText(questions.get(i - 1).getText());
             h4.setText("First column is reordering. Reorder its items to match ones in the second column ");  //Пофиксить
-
         }
     }
 
-//    public List<String> gridFiller1(){
-//        List<String> column = new ArrayList<>();
-//        for(List<ComparisonAnswer> element : compAnswers){
-//            for(ComparisonAnswer comparisonAnswer : element){
-//                column.add(comparisonAnswer.getColumn1());
-//            }
-//        }                                                        //ПОЛНОЕ
-//        return column;                                           //УБЛЮДСТВО
-//    }
-//    private List<String> gridFiller2(){
-//        List<String> column = new ArrayList<>();                  //НАДО
-//        for(List<ComparisonAnswer> element : compAnswers){
-//            for (ComparisonAnswer comparisonAnswer : element){
-//                column.add(comparisonAnswer.getColumn2());
-//            }
-//        }                                                         //ПОФИКСИТЬ
-//        return column;
-//    }
+    public void setGridDraggable(Grid<ComparisonAnswer> grid) {
+        grid.addDragStartListener(event -> {
+            draggedItem = event.getDraggedItems().get(0); //Сомнительно, но ОКЭЙ
+            grid.setDropMode(GridDropMode.ON_TOP);
+        });
+
+        grid.addDragEndListener(
+                event -> {
+                    draggedItem = null;
+                    // Once dragging has ended, disable drop mode so that
+                    // it won't look like other dragged items can be dropped
+                    grid.setDropMode(null);
+                }
+        );
+
+        grid.addDropListener(event ->{
+           ComparisonAnswer dropOverItem = event.getDropTargetItem().get();
+           if(!draggedItem.equals(dropOverItem)){
+               Collections.swap(compAnswers.get(i),
+                       compAnswers.get(i).indexOf(draggedItem), compAnswers.get(i).indexOf(dropOverItem));
+               grid.getDataProvider().refreshAll();
+           }
+        });
+
+    }
 
 }
