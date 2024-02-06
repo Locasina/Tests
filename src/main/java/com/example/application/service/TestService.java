@@ -3,6 +3,7 @@ package com.example.application.service;
 import com.example.application.data.entity.Answer;
 import com.example.application.data.entity.Question;
 import com.example.application.data.repository.AnswerRepository;
+import com.example.application.data.repository.ComparisonAnswerRepository;
 import com.example.application.data.repository.QuestionRepository;
 import com.example.application.data.repository.TestRepository;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class TestService {
+    public ComparisonAnswerRepository comparisonAnswerRepository;
     public QuestionRepository questionRepository;
     public AnswerRepository answerRepository;
     public TestRepository testRepository;
@@ -26,6 +28,4 @@ public class TestService {
         }
         return answers;
     }
-
-
 }

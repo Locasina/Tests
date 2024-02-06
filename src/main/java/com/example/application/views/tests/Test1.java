@@ -3,9 +3,6 @@ package com.example.application.views.tests;
 import com.example.application.data.entity.Answer;
 import com.example.application.data.entity.ComparisonAnswer;
 import com.example.application.data.entity.Question;
-import com.example.application.data.repository.AnswerRepository;
-import com.example.application.data.repository.ComparisonAnswerRepository;
-import com.example.application.data.repository.QuestionRepository;
 import com.example.application.security.SecurityService;
 import com.example.application.service.TestService;
 import com.example.application.views.MainLayout;
@@ -42,18 +39,10 @@ import java.util.Map;
 @PermitAll
 @Route(value = "test/:testID", layout = MainLayout.class)
 public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObserver {
-
-    @Autowired
-    private QuestionRepository questionRepository;
-    @Autowired
-    private AnswerRepository answerRepository;
     @Autowired
     private TestService testService;
-
     @Autowired
     SecurityService securityService;
-    @Autowired
-    private ComparisonAnswerRepository comparisonAnswerRepository;
     List<Question> questions;
     List<List<Answer>> answers;
     private String option;
@@ -77,8 +66,6 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     private final Grid<ComparisonAnswer> grid2 = new Grid<>(ComparisonAnswer.class, false);
     private Map<Integer, List<ComparisonAnswer>> compAnswers;
     ComparisonAnswer draggedItem;
-
-
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
 
@@ -91,7 +78,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
         for(Question q: questions){
             if(q.getTypeQ()==4) {
-                compAnswers.put(j, comparisonAnswerRepository.findByQuestionId(q.getId()));
+                compAnswers.put(j, testService.comparisonAnswerRepository.findByQuestionId(q.getId()));
             } else {
                 compAnswers.put(j, null);
             }
@@ -100,8 +87,6 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
         numberOfQ = questions.size();
         update();
     }
-
-
     public Test1() {
 
         getContent().setHeightFull();
