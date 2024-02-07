@@ -6,6 +6,7 @@ import com.example.application.data.repository.AnswerRepository;
 import com.example.application.data.repository.ComparisonAnswerRepository;
 import com.example.application.data.repository.QuestionRepository;
 import com.example.application.data.repository.TestRepository;
+import com.example.application.util.TestData;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class TestService {
     public QuestionRepository questionRepository;
     public AnswerRepository answerRepository;
     public TestRepository testRepository;
-    public List<List<Answer>> getAlltestAnswer(Integer index){
+    public List<List<Answer>> getAllTestAnswer(Integer index){
         List<Question> questions = questionRepository.findByTestId(index);
         List<List<Answer>> answers = new ArrayList<>();
         for (Question q:
@@ -27,5 +28,11 @@ public class TestService {
             answers.add(answerRepository.findByQuestionId(q.getId()));
         }
         return answers;
+    }
+    public TestData dataTestCatch(int index) {
+        TestData td = new TestData();
+        td.setAnswers(getAllTestAnswer(index));
+        td.setQuestions(questionRepository.findByTestId(index));
+        return td;
     }
 }

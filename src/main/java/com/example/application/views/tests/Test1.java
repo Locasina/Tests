@@ -5,6 +5,7 @@ import com.example.application.data.entity.ComparisonAnswer;
 import com.example.application.data.entity.Question;
 import com.example.application.security.SecurityService;
 import com.example.application.service.TestService;
+import com.example.application.util.TestData;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -39,11 +40,11 @@ import java.util.Map;
 @PermitAll
 @Route(value = "test/:testID", layout = MainLayout.class)
 public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObserver {
+    TestData testData;
     @Autowired
     private TestService testService;
     @Autowired
     SecurityService securityService;
-    List<Question> questions;
     List<List<Answer>> answers;
     private String option;
 
@@ -72,11 +73,13 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
         i = 1;
         int j =1;
         testID =beforeEnterEvent.getRouteParameters().get("testID").get();
-        questions = testService.questionRepository.findByTestId(Integer.parseInt(testID));
-        answers = testService.getAlltestAnswer(Integer.parseInt(testID));
+
+        testData = testService.dataTestCatch(Integer.parseInt(testID));
+
+        answers = testService.getAllTestAnswer(Integer.parseInt(testID));
         compAnswers = new HashMap<>();
 
-        for(Question q: questions){
+        for(Question q: testService.questionRepository.findByTestId(Integer.parseInt(testID))){
             if(q.getTypeQ()==4) {
                 compAnswers.put(j, testService.comparisonAnswerRepository.findByQuestionId(q.getId()));
             } else {
@@ -84,7 +87,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             }
             j++;
         }
-        numberOfQ = questions.size();
+        numberOfQ = testData.getQuestions().size();
         update();
     }
     public Test1() {
@@ -126,7 +129,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
         });
     }
     private void setQuestion(){
-        setAnswers(questions.get(i-1).getTypeQ());
+        setAnswers(testData.getQuestions().get(i-1).getTypeQ());
         choiceNotifier();
 
     }
@@ -140,8 +143,8 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 
     private void update(){
         h1.setText(i + "/" + numberOfQ);
-        setAnswers(questions.get(i-1).getTypeQ());
-        h2.setText(questions.get(i - 1).getText());
+        setAnswers(testData.getQuestions().get(i-1).getTypeQ());
+        h2.setText(testData.getQuestions().get(i - 1).getText());
 
         grid.setAllRowsVisible(true);
         grid2.setAllRowsVisible(true);
@@ -191,7 +194,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             grid2.setVisible(false);
             radioGroup.setVisible(true);
 //            radioGroup.setLabel(questions.get(i - 1).getText());
-            h2.setText(questions.get(i - 1).getText());
+            h2.setText(testData.getQuestions().get(i - 1).getText());
             radioGroup.setItems(answers.get(i - 1));
         }
         if(n == 2) {
@@ -202,7 +205,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             checkboxGroup.setVisible(true);
 //            checkboxGroup.setLabel(questions.get(i - 1).getText());
             checkboxGroup.setItems(answers.get(i - 1));
-            h2.setText(questions.get(i - 1).getText());
+            h2.setText(testData.getQuestions().get(i - 1).getText());
         }
         if(n == 3) {
             checkboxGroup.setVisible(false);
@@ -211,7 +214,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             grid2.setVisible(false);
             textField.setVisible(true);
 //          textField.setLabel(questions.get(i - 1).getText());
-            h2.setText(questions.get(i - 1).getText());
+            h2.setText(testData.getQuestions().get(i - 1).getText());
         }
         if(n ==4){
             checkboxGroup.setVisible(false);
@@ -221,7 +224,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             grid2.setVisible(true);
             grid.setItems(compAnswers.get(i));
             grid2.setItems(compAnswers.get(i));
-            h2.setText(questions.get(i - 1).getText());
+            h2.setText(testData.getQuestions().get(i - 1).getText());
             h4.setText("First column is reordering. Reorder its items to match ones in the second column ");  //Пофиксить
         }
     }
