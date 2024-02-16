@@ -1,8 +1,6 @@
 package com.example.application.views.tests;
 
-import com.example.application.data.entity.Answer;
 import com.example.application.data.entity.ComparisonAnswer;
-import com.example.application.data.entity.Question;
 import com.example.application.security.SecurityService;
 import com.example.application.service.TestService;
 import com.example.application.util.TestData;
@@ -22,6 +20,7 @@ import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
+import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -33,24 +32,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @PageTitle("test")
 @PermitAll
 @Route(value = "test/:testID", layout = MainLayout.class)
 public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObserver {
-    TestData testData;
+    private TestData testData;
     @Autowired
     private TestService testService;
     @Autowired
     SecurityService securityService;
-    List<List<Answer>> answers;
     private String option;
 
     protected int i;
     private int numberOfQ;
-    private String testID;
     private final H1 h1 = new H1();
     private final H2 h2 = new H2();
     private final H4 h4 = new H4();
@@ -65,28 +61,14 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     private final TextField textField = new TextField();
     private final Grid<ComparisonAnswer> grid = new Grid<>(ComparisonAnswer.class, false);
     private final Grid<ComparisonAnswer> grid2 = new Grid<>(ComparisonAnswer.class, false);
-    private Map<Integer, List<ComparisonAnswer>> compAnswers;
     ComparisonAnswer draggedItem;
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
 
-        i = 1;
-        int j =1;
-        testID =beforeEnterEvent.getRouteParameters().get("testID").get();
+        i = 1; //number of current question
+        String testID = beforeEnterEvent.getRouteParameters().get("testID").get();
 
         testData = testService.dataTestCatch(Integer.parseInt(testID));
-
-        answers = testService.getAllTestAnswer(Integer.parseInt(testID));
-        compAnswers = new HashMap<>();
-
-        for(Question q: testService.questionRepository.findByTestId(Integer.parseInt(testID))){
-            if(q.getTypeQ()==4) {
-                compAnswers.put(j, testService.comparisonAnswerRepository.findByQuestionId(q.getId()));
-            } else {
-                compAnswers.put(j, null);
-            }
-            j++;
-        }
         numberOfQ = testData.getQuestions().size();
         update();
     }
@@ -136,7 +118,6 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     private void choiceNotifier (){
         if(chosenOptions.get(i)!=null){
             radioGroup.setValue(chosenOptions.get(i));
-
         }
 
     }
@@ -172,7 +153,6 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
         getContent().add(h1);
         getContent().add(h2);
 
-
         answersLayout.add(radioGroup);
         answersLayout.add(checkboxGroup);
         answersLayout.add(textField);
@@ -184,7 +164,6 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
         getContent().add(layoutRow2);
         layoutRow.add(previousButton);
         layoutRow.add(nextButton);
-
     }
     private void setAnswers(int n) {
         if (n == 1) {
@@ -193,9 +172,10 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             grid.setVisible(false);
             grid2.setVisible(false);
             radioGroup.setVisible(true);
+            radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
 //            radioGroup.setLabel(questions.get(i - 1).getText());
             h2.setText(testData.getQuestions().get(i - 1).getText());
-            radioGroup.setItems(answers.get(i - 1));
+            radioGroup.setItems(testData.getAnswers().get(i - 1));
         }
         if(n == 2) {
             radioGroup.setVisible(false);
@@ -203,8 +183,9 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             grid.setVisible(false);
             grid2.setVisible(false);
             checkboxGroup.setVisible(true);
+            checkboxGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
 //            checkboxGroup.setLabel(questions.get(i - 1).getText());
-            checkboxGroup.setItems(answers.get(i - 1));
+            checkboxGroup.setItems(testData.getAnswers().get(i - 1));
             h2.setText(testData.getQuestions().get(i - 1).getText());
         }
         if(n == 3) {
@@ -216,14 +197,14 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
 //          textField.setLabel(questions.get(i - 1).getText());
             h2.setText(testData.getQuestions().get(i - 1).getText());
         }
-        if(n ==4){
+        if(n == 4){
             checkboxGroup.setVisible(false);
             radioGroup.setVisible(false);
             textField.setVisible(false);
             grid.setVisible(true);
             grid2.setVisible(true);
-            grid.setItems(compAnswers.get(i));
-            grid2.setItems(compAnswers.get(i));
+            grid.setItems(testData.getCompAnswers().get(i-1));
+            grid2.setItems(testData.getCompAnswers().get(i-1));
             h2.setText(testData.getQuestions().get(i - 1).getText());
             h4.setText("First column is reordering. Reorder its items to match ones in the second column ");  //Пофиксить
         }
@@ -247,8 +228,8 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
         grid.addDropListener(event ->{
            ComparisonAnswer dropOverItem = event.getDropTargetItem().get();
            if(!draggedItem.equals(dropOverItem)){
-               Collections.swap(compAnswers.get(i),
-                       compAnswers.get(i).indexOf(draggedItem), compAnswers.get(i).indexOf(dropOverItem));
+               Collections.swap(testData.getCompAnswers().get(i-1),
+                       testData.getCompAnswers().get(i-1).indexOf(draggedItem), testData.getCompAnswers().get(i-1).indexOf(dropOverItem));
                grid.getDataProvider().refreshAll();
            }
         });
