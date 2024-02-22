@@ -5,9 +5,7 @@ import com.example.application.security.SecurityService;
 import com.example.application.service.TestService;
 import com.example.application.util.TestData;
 import com.example.application.views.MainLayout;
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
@@ -21,23 +19,27 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
+import com.vaadin.flow.component.shared.HasClientValidation;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.selection.MultiSelectionEvent;
+import com.vaadin.flow.data.selection.MultiSelectionListener;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.PermitAll;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @PageTitle("test")
 @PermitAll
 @Route(value = "test/:testID", layout = MainLayout.class)
 public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObserver {
+    Object[] objects;
+    Set[] sets;
     private TestData testData;
     @Autowired
     private TestService testService;
@@ -71,17 +73,19 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
         testData = testService.dataTestCatch(Integer.parseInt(testID));
         numberOfQ = testData.getQuestions().size();
         update();
+        objects = new Object[numberOfQ];
+        sets = new Set[numberOfQ];
     }
     public Test1() {
 
         getContent().setHeightFull();
         getContent().setWidthFull();
 
-        radioGroup.addValueChangeListener(event -> {
-            if(event.getValue()!= null){
-                option =  event.getValue().toString();
-            }
-        });
+//        radioGroup.addValueChangeListener(event -> {
+//            if(event.getValue()!= null){
+//                option =  event.getValue().toString();
+//            }
+//        });
 
         nextButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
             if (i < numberOfQ) {
@@ -92,6 +96,11 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
                 i++;
                 h4.setText(null);
                 setQuestion();
+                radioGroup.setValue(objects[i-1]);
+                if (objects[i-1] != null & (testData.getQuestions().get(i-1).getTypeQ() == 2))
+                    checkboxGroup.setValue((Set)objects[i-1]);
+                if (objects[i-1] != null & (testData.getQuestions().get(i-1).getTypeQ() == 3))
+                    textField.setValue(objects[i-1].toString());
             }
             h1.setText(i + "/" + numberOfQ);
         });
@@ -105,10 +114,71 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
                 i--;
                 h4.setText(null);
                 setQuestion();
+                radioGroup.setValue(objects[i-1]);
+                if (objects[i-1] != null & (testData.getQuestions().get(i-1).getTypeQ() == 2))
+                    checkboxGroup.setValue((Set)objects[i-1]);
+                if (objects[i-1] != null & (testData.getQuestions().get(i-1).getTypeQ() == 3))
+                    textField.setValue(objects[i-1].toString());
             }
             h1.setText(i + "/" + numberOfQ);
 
         });
+        radioGroup.addClientValidatedEventListener(new ComponentEventListener<HasClientValidation.ClientValidatedEvent>() {
+            @Override
+            public void onComponentEvent(HasClientValidation.ClientValidatedEvent clientValidatedEvent) {
+                if (radioGroup.getValue() != null) {
+                    objects[i - 1] = radioGroup.getValue();
+                    System.out.println(objects[i - 1]);
+                }
+            }
+        });
+
+        checkboxGroup.addClientValidatedEventListener(new ComponentEventListener<HasClientValidation.ClientValidatedEvent>() {
+            @Override
+            public void onComponentEvent(HasClientValidation.ClientValidatedEvent clientValidatedEvent) {
+                if (checkboxGroup.getValue() != null) {
+                    objects[i-1] = checkboxGroup.getValue();
+                    System.out.println(objects[i-1]);
+                }
+            }
+        });
+
+        textField.addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<TextField, String>>() {
+            @Override
+            public void valueChanged(AbstractField.ComponentValueChangeEvent<TextField, String> textFieldStringComponentValueChangeEvent) {
+                if(!textField.getValue().equals("")) {
+                    objects[i-1] = textField.getValue();
+                }
+            }
+        });
+
+        Button testButton1 = new Button("Тест 1");
+        Button testButton2 = new Button("Тест 2");
+        getContent().add(testButton1, testButton2);
+        testButton1.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                objects[i-1] = checkboxGroup.getValue();
+                checkboxGroup.deselectAll();
+                System.out.println(objects[i-1]);
+            }
+        });
+        testButton2.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                checkboxGroup.setValue((Set) objects[i-1]);
+            }
+        });
+
+//        checkboxGroup.addSelectionListener(new MultiSelectionListener() {
+//            @Override
+//            public void selectionChange(MultiSelectionEvent multiSelectionEvent) {
+//                if(checkboxGroup.getValue() != null)
+//                    objects[i-1] = checkboxGroup.getValue();
+//                System.out.println(objects[i-1]);
+//            }
+//        });
+
     }
     private void setQuestion(){
         setAnswers(testData.getQuestions().get(i-1).getTypeQ());
@@ -194,6 +264,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
             grid.setVisible(false);
             grid2.setVisible(false);
             textField.setVisible(true);
+            textField.setValue("");
 //          textField.setLabel(questions.get(i - 1).getText());
             h2.setText(testData.getQuestions().get(i - 1).getText());
         }
