@@ -7,12 +7,9 @@ import lombok.RequiredArgsConstructor;
 
 @Entity
 @Data
-@NonNull
 @RequiredArgsConstructor
 public class Test {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-
     private Integer Id;
     private String text;
     private String title;
