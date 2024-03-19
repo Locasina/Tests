@@ -1,6 +1,9 @@
 package com.example.application.views;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.html.H1;
@@ -60,13 +63,13 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         layoutRow.addClassName(LumoUtility.Gap.MEDIUM);
         layoutRow.setWidth("100%");
         layoutRow.getStyle().set("flex-grow", "1");
-        textField.setLabel("Text field");
+        textField.setLabel("Название теста");
         layoutRow.setAlignSelf(FlexComponent.Alignment.CENTER, textField);
         textField.setWidth("min-content");
-        textField2.setLabel("Text field");
+        textField2.setLabel("Подзаголовок");
         layoutRow.setAlignSelf(FlexComponent.Alignment.CENTER, textField2);
         textField2.setWidth("min-content");
-        textArea.setLabel("Text area");
+        textArea.setLabel("Описание");
         textArea.setWidth("300px");
         layoutColumn3.setWidthFull();
         getContent().setFlexGrow(1.0, layoutColumn3);
@@ -80,13 +83,32 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         layoutRow2.addClassName(LumoUtility.Padding.XSMALL);
         layoutRow2.setWidth("100%");
         layoutRow2.getStyle().set("flex-grow", "1");
-        checkbox.setLabel("Checkbox");
+        checkbox.setLabel("Выкл");
+        checkbox.addClickListener(new ComponentEventListener<ClickEvent<Checkbox>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Checkbox> checkboxClickEvent) {
+                timePicker.setEnabled(!timePicker.isEnabled());
+            }
+        });
         layoutRow2.setAlignSelf(FlexComponent.Alignment.CENTER, checkbox);
         checkbox.setWidth("min-content");
         timePicker.setLabel("Time picker");
         layoutRow2.setAlignSelf(FlexComponent.Alignment.START, timePicker);
         timePicker.setWidth("min-content");
-        checkbox2.setLabel("Checkbox");
+        checkbox2.setLabel("Выкл");
+        checkbox2.addClickListener(new ComponentEventListener<ClickEvent<Checkbox>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Checkbox> checkboxClickEvent) {
+                if(dateTimePicker.isEnabled()) {
+                    dateTimePicker.setEnabled(false);
+                    dateTimePicker2.setEnabled(false);
+                }
+                else {
+                    dateTimePicker.setEnabled(true);
+                    dateTimePicker2.setEnabled(true);
+                }
+            }
+        });
         layoutRow2.setAlignSelf(FlexComponent.Alignment.CENTER, checkbox2);
         checkbox2.setWidth("min-content");
         dateTimePicker.setLabel("Date time picker");
@@ -121,6 +143,16 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         getContent().add(layoutColumn4);
         layoutColumn4.add(layoutRow3);
         layoutRow3.add(select);
+        Button addButton = new Button("Добавить вопрос");
+        layoutRow3.add(addButton);
+        layoutRow3.getStyle().set("flex-grow", "1");
+        layoutRow3.setAlignSelf(FlexComponent.Alignment.END, addButton);
+        HorizontalLayout layoutRow4 = new HorizontalLayout();
+        Button deleteButton = new Button("Удалить тест");
+        Button saveButton = new Button("Сохранить тест");
+        layoutColumn4.add(layoutRow4);
+        layoutRow4.add(deleteButton, saveButton);
+        layoutRow4.getStyle().set("flex-grow", "1");
     }
     record SampleItem(String value, String label, Boolean disabled) {
     }
@@ -129,7 +161,7 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         List<SampleItem> sampleItems = new ArrayList<>();
         sampleItems.add(new SampleItem("first", "First", null));
         sampleItems.add(new SampleItem("second", "Second", null));
-        sampleItems.add(new SampleItem("third", "Third", Boolean.TRUE));
+        sampleItems.add(new SampleItem("third", "Third", null));
         sampleItems.add(new SampleItem("fourth", "Fourth", null));
         select.setItems(sampleItems);
         select.setItemLabelGenerator(item -> ((SampleItem) item).label());
