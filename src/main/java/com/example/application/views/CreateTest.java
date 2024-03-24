@@ -1,12 +1,14 @@
 package com.example.application.views;
 
+import com.example.application.views.about.AboutView;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -23,6 +25,7 @@ import jakarta.annotation.security.PermitAll;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 @Route(value = "createTest/:testID", layout = MainLayout.class)
 @PermitAll
 
@@ -30,7 +33,7 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
 
     @Override
     public void beforeEnter(BeforeEnterEvent event){
-        H1 h1 = new H1("SASASA");
+
     }
     public CreateTest(){
         VerticalLayout layoutColumn2 = new VerticalLayout();
@@ -84,31 +87,13 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         layoutRow2.setWidth("100%");
         layoutRow2.getStyle().set("flex-grow", "1");
         checkbox.setLabel("Выкл");
-        checkbox.addClickListener(new ComponentEventListener<ClickEvent<Checkbox>>() {
-            @Override
-            public void onComponentEvent(ClickEvent<Checkbox> checkboxClickEvent) {
-                timePicker.setEnabled(!timePicker.isEnabled());
-            }
-        });
+        checkbox.addClickListener((ComponentEventListener<ClickEvent<Checkbox>>) checkboxClickEvent -> timePicker.setEnabled(!timePicker.isEnabled()));
         layoutRow2.setAlignSelf(FlexComponent.Alignment.CENTER, checkbox);
         checkbox.setWidth("min-content");
         timePicker.setLabel("Time picker");
         layoutRow2.setAlignSelf(FlexComponent.Alignment.START, timePicker);
         timePicker.setWidth("min-content");
         checkbox2.setLabel("Выкл");
-        checkbox2.addClickListener(new ComponentEventListener<ClickEvent<Checkbox>>() {
-            @Override
-            public void onComponentEvent(ClickEvent<Checkbox> checkboxClickEvent) {
-                if(dateTimePicker.isEnabled()) {
-                    dateTimePicker.setEnabled(false);
-                    dateTimePicker2.setEnabled(false);
-                }
-                else {
-                    dateTimePicker.setEnabled(true);
-                    dateTimePicker2.setEnabled(true);
-                }
-            }
-        });
         layoutRow2.setAlignSelf(FlexComponent.Alignment.CENTER, checkbox2);
         checkbox2.setWidth("min-content");
         dateTimePicker.setLabel("Date time picker");
@@ -149,10 +134,36 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         layoutRow3.setAlignSelf(FlexComponent.Alignment.END, addButton);
         HorizontalLayout layoutRow4 = new HorizontalLayout();
         Button deleteButton = new Button("Удалить тест");
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY,
+                ButtonVariant.LUMO_ERROR);
         Button saveButton = new Button("Сохранить тест");
         layoutColumn4.add(layoutRow4);
         layoutRow4.add(deleteButton, saveButton);
         layoutRow4.getStyle().set("flex-grow", "1");
+
+        checkbox2.addClickListener((ComponentEventListener<ClickEvent<Checkbox>>) checkboxClickEvent -> {
+            if(dateTimePicker.isEnabled()) {
+                dateTimePicker.setEnabled(false);
+                dateTimePicker2.setEnabled(false);
+            }
+            else {
+                dateTimePicker.setEnabled(true);
+                dateTimePicker2.setEnabled(true);
+            }
+        });
+        deleteButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
+            ConfirmDialog dialog = new ConfirmDialog();
+            dialog.setHeader("Удалить \"тест\"?");
+            dialog.setText(
+                    "Вы уверены что хотите удалить этот тест?");
+            dialog.setCancelable(true);
+            dialog.setConfirmText("Delete");
+            dialog.setConfirmButtonTheme("error primary");
+            dialog.open();
+            dialog.addConfirmListener(event -> getUI().ifPresent(ui ->
+                    ui.navigate(AboutView.class)));
+        });
+
     }
     record SampleItem(String value, String label, Boolean disabled) {
     }

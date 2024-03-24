@@ -1,6 +1,6 @@
 package com.example.application.views.about;
 
-import com.example.application.views.tests.Test1;
+import com.example.application.views.CreateTest;
 import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
@@ -15,7 +15,7 @@ public class CreateTestCard extends ListItem {
 
             addClickListener(e ->
                     getUI().ifPresent(ui ->
-                            ui.navigate(Test1.class, new RouteParameters("testID", String.valueOf(id))))
+                            ui.navigate(CreateTest.class, new RouteParameters("testID", String.valueOf(id))))
             );
 
             Span header = new Span();
@@ -33,9 +33,9 @@ public class CreateTestCard extends ListItem {
 
             if (state == 0) {
                 badge.getElement().setAttribute("theme", "badge");
-                badge.setText("Not passed");
+                badge.setText("Не закончен");
             } else if (state == 1) {
-                badge.setText("Confirmed");
+                badge.setText("Опубликован");
                 badge.getElement().getThemeList().add("badge success");
             } else if (state == 2) {
                 badge.setText("in progress");

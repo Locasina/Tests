@@ -2,6 +2,7 @@ package com.example.application.views.about;
 
 import com.example.application.data.entity.Test;
 import com.example.application.data.repository.TestRepository;
+import com.example.application.service.MyTestService;
 import com.example.application.views.CreateTest;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.ClickEvent;
@@ -29,34 +30,33 @@ import java.util.List;
 @PageTitle("About")
 @Route(value = "about", layout = MainLayout.class)
 @PermitAll
-public class AboutView extends Main implements HasComponents, HasStyle, BeforeEnterObserver{
+public class AboutView extends Main implements HasComponents, HasStyle, BeforeEnterObserver {
     Button plusButton = new Button(new Icon(VaadinIcon.PLUS));
-    @Autowired
     TestRepository testRepository;
-
+    MyTestService myTestService;
+    private OrderedList testCardContainer;
+    @Autowired
+    void setAutowired(TestRepository testRepository, MyTestService myTestService){
+        this.testRepository = testRepository;
+        this.myTestService = myTestService;
+    }
     public AboutView() {
         plusButton.addThemeVariants(ButtonVariant.LUMO_ICON);
         plusButton.setAriaLabel("Add item");
-        plusButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
-            @Override
-            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
-                Test test = new Test();
-                List<Test> tests = testRepository.findAll();
-                test.setId(tests.size()+1);
-                test.setText("");
-                test.setSubtitle("");
-                test.setTitle("");
-                testRepository.save(test);
-                System.out.println(test.getId());
-                getUI().ifPresent(ui -> ui.navigate(CreateTest.class, new RouteParameters("testID", String.valueOf(test.getId()))));
-            }
+        plusButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
+            Test test = new Test();
+            List<Test> tests = testRepository.findAll();
+            test.setId(tests.size()+1);
+            test.setText("");
+            test.setSubtitle("");
+            test.setTitle("");
+            testRepository.save(test);
+            myTestService.saveNewTest(test);
+            getUI().ifPresent(ui -> ui.navigate(CreateTest.class, new RouteParameters("testID", String.valueOf(test.getId()))));
         });
-
-
         constructUI();
-
     }
-    private OrderedList testCardContainer;
+
 
     private void constructUI() {
         addClassNames("image-list-view");
@@ -66,7 +66,7 @@ public class AboutView extends Main implements HasComponents, HasStyle, BeforeEn
         container.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.BETWEEN);
 
         VerticalLayout headerContainer = new VerticalLayout();
-        H2 header = new H2("Available tests");
+        H2 header = new H2("Мои тесты");
         header.addClassNames(Margin.Bottom.NONE, Margin.Top.XLARGE, LumoUtility.FontSize.XXXLARGE);
         headerContainer.add(header);
 
@@ -85,13 +85,9 @@ public class AboutView extends Main implements HasComponents, HasStyle, BeforeEn
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         testCardContainer.removeAll();
-        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
-        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
-        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
-        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
-        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
-        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
-        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзоголовок",3, 4));
+        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзаголовок",3, 4));
+        myTestService.getMyTest().forEach(x-> testCardContainer.add(new CreateTestCard(x.getTest().getText(), x.getTest().getTitle(), x.getTest().getSubtitle(),x.getState(), x.getTest().getId())));
+
     }
 }
 
