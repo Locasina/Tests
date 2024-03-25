@@ -7,7 +7,6 @@ import lombok.Data;
 @Data
 public class MyTest {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer Id;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "username")

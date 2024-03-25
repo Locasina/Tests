@@ -1,5 +1,6 @@
 package com.example.application.views.about;
 
+import com.example.application.data.entity.MyTest;
 import com.example.application.data.entity.Test;
 import com.example.application.data.repository.TestRepository;
 import com.example.application.service.MyTestService;
@@ -46,13 +47,13 @@ public class AboutView extends Main implements HasComponents, HasStyle, BeforeEn
         plusButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
             Test test = new Test();
             List<Test> tests = testRepository.findAll();
-            test.setId(tests.size()+1);
+            test.setId(tests.get(tests.size()-1).getId()+1);
             test.setText("");
             test.setSubtitle("");
             test.setTitle("");
             testRepository.save(test);
-            myTestService.saveNewTest(test);
-            getUI().ifPresent(ui -> ui.navigate(CreateTest.class, new RouteParameters("testID", String.valueOf(test.getId()))));
+            MyTest myTest = myTestService.saveNewTest(test);
+            getUI().ifPresent(ui -> ui.navigate(CreateTest.class, new RouteParameters("testID", String.valueOf(myTest.getId()))));
         });
         constructUI();
     }
@@ -85,8 +86,8 @@ public class AboutView extends Main implements HasComponents, HasStyle, BeforeEn
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         testCardContainer.removeAll();
-        testCardContainer.add(new CreateTestCard("1 тест", "Название теста", "Подзаголовок",3, 4));
-        myTestService.getMyTest().forEach(x-> testCardContainer.add(new CreateTestCard(x.getTest().getText(), x.getTest().getTitle(), x.getTest().getSubtitle(),x.getState(), x.getTest().getId())));
+        myTestService.getMyTest().forEach(x-> testCardContainer.add(new CreateTestCard(x.getTest().getText(), x.getTest().getTitle(),
+                x.getTest().getSubtitle(),x.getState(), x.getId())));
 
     }
 }

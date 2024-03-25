@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface MyTestRepository extends CrudRepository<MyTest, Integer> {
     List<MyTest> findByUserUsername(String username);
-
+    List<MyTest> findAll();
+    MyTest findById(int id);
 }

@@ -1,5 +1,7 @@
 package com.example.application.views;
 
+import com.example.application.data.repository.TestRepository;
+import com.example.application.service.MyTestService;
 import com.example.application.views.about.AboutView;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -21,6 +23,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +33,19 @@ import java.util.List;
 @PermitAll
 
 public class CreateTest extends Composite<VerticalLayout> implements BeforeEnterObserver {
+    int testID;
+    TestRepository testRepository;
+    MyTestService myTestService;
+    @Autowired
+    void setAutowired(TestRepository testRepository, MyTestService myTestService){
+        this.testRepository = testRepository;
+        this.myTestService = myTestService;
+    }
 
     @Override
     public void beforeEnter(BeforeEnterEvent event){
-
+        testID = Integer.parseInt(event.getRouteParameters().get("testID").get());
+        System.out.println(testID);
     }
     public CreateTest(){
         VerticalLayout layoutColumn2 = new VerticalLayout();
@@ -160,6 +172,7 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
             dialog.setConfirmText("Delete");
             dialog.setConfirmButtonTheme("error primary");
             dialog.open();
+            myTestService.deleteTest(myTestService.findById(testID).getTest(),myTestService.findById(testID));
             dialog.addConfirmListener(event -> getUI().ifPresent(ui ->
                     ui.navigate(AboutView.class)));
         });
