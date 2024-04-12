@@ -17,6 +17,12 @@ public class MyTestService {
     SecurityService securityService;
     MyTestRepository myTestRepository;
     TestRepository testRepository;
+
+    public void titleSave(int i, String str){
+        MyTest mt = findById(i);
+        mt.getTest().setTitle(str);
+        testRepository.save(mt.getTest());
+    }
     public List<MyTest> getMyTest() {
         List<MyTest> e = myTestRepository.findByUserUsername(securityService.getAuthenticatedUser().getUsername());
         return e;

@@ -50,7 +50,7 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
     public CreateTest(){
         VerticalLayout layoutColumn2 = new VerticalLayout();
         HorizontalLayout layoutRow = new HorizontalLayout();
-        TextField textField = new TextField();
+        TextField titleTest = new TextField("fasf", "Введите название теста");
         TextField textField2 = new TextField();
         TextArea textArea = new TextArea();
         VerticalLayout layoutColumn3 = new VerticalLayout();
@@ -78,9 +78,9 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         layoutRow.addClassName(LumoUtility.Gap.MEDIUM);
         layoutRow.setWidth("100%");
         layoutRow.getStyle().set("flex-grow", "1");
-        textField.setLabel("Название теста");
-        layoutRow.setAlignSelf(FlexComponent.Alignment.CENTER, textField);
-        textField.setWidth("min-content");
+        titleTest.setLabel("Название теста");
+        layoutRow.setAlignSelf(FlexComponent.Alignment.CENTER, titleTest);
+        titleTest.setWidth("min-content");
         textField2.setLabel("Подзаголовок");
         layoutRow.setAlignSelf(FlexComponent.Alignment.CENTER, textField2);
         textField2.setWidth("min-content");
@@ -127,7 +127,7 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         setSelectSampleData(select);
         getContent().add(layoutColumn2);
         layoutColumn2.add(layoutRow);
-        layoutRow.add(textField);
+        layoutRow.add(titleTest);
         layoutRow.add(textField2);
         layoutRow.add(textArea);
         getContent().add(layoutColumn3);
@@ -152,6 +152,13 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         layoutColumn4.add(layoutRow4);
         layoutRow4.add(deleteButton, saveButton);
         layoutRow4.getStyle().set("flex-grow", "1");
+
+        saveButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                myTestService.titleSave(testID, titleTest.getValue());
+            }
+        });
 
         checkbox2.addClickListener((ComponentEventListener<ClickEvent<Checkbox>>) checkboxClickEvent -> {
             if(dateTimePicker.isEnabled()) {
