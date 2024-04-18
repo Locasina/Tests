@@ -18,9 +18,21 @@ public class MyTestService {
     MyTestRepository myTestRepository;
     TestRepository testRepository;
 
-    public void titleSave(int i, String str){
+    public String getTitle(int i){
+        return findById(i).getTest().getTitle();
+    }
+    public String getSubtitle(int i){
+        return findById(i).getTest().getSubtitle();
+    }
+    public String getText(int i){
+        return findById(i).getTest().getText();
+    }
+
+    public void allInfSave(int i, String title, String subtitle, String text){
         MyTest mt = findById(i);
-        mt.getTest().setTitle(str);
+        mt.getTest().setTitle(title);
+        mt.getTest().setSubtitle(subtitle);
+        mt.getTest().setText(text);
         testRepository.save(mt.getTest());
     }
     public List<MyTest> getMyTest() {

@@ -8,7 +8,6 @@ import lombok.Data;
 public class Answer {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer Id;
 
     @ManyToOne(fetch = FetchType.EAGER)

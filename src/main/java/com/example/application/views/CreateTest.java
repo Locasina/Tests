@@ -36,6 +36,12 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
     int testID;
     TestRepository testRepository;
     MyTestService myTestService;
+    String title = "";
+
+    TextField titleTest;
+    TextField subtitleTest;
+    TextArea text;
+
     @Autowired
     void setAutowired(TestRepository testRepository, MyTestService myTestService){
         this.testRepository = testRepository;
@@ -46,13 +52,17 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
     public void beforeEnter(BeforeEnterEvent event){
         testID = Integer.parseInt(event.getRouteParameters().get("testID").get());
         System.out.println(testID);
+        title = myTestService.getTitle(testID);
+        titleTest.setValue(title);
+        subtitleTest.setValue(myTestService.getSubtitle(testID));
+        text.setValue(myTestService.getText(testID));
     }
     public CreateTest(){
         VerticalLayout layoutColumn2 = new VerticalLayout();
         HorizontalLayout layoutRow = new HorizontalLayout();
-        TextField titleTest = new TextField("fasf", "Введите название теста");
-        TextField textField2 = new TextField();
-        TextArea textArea = new TextArea();
+        titleTest = new TextField("fasf", "Введите название теста");
+        subtitleTest = new TextField();
+        text = new TextArea();
         VerticalLayout layoutColumn3 = new VerticalLayout();
         HorizontalLayout layoutRow2 = new HorizontalLayout();
         Checkbox checkbox = new Checkbox();
@@ -81,11 +91,11 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         titleTest.setLabel("Название теста");
         layoutRow.setAlignSelf(FlexComponent.Alignment.CENTER, titleTest);
         titleTest.setWidth("min-content");
-        textField2.setLabel("Подзаголовок");
-        layoutRow.setAlignSelf(FlexComponent.Alignment.CENTER, textField2);
-        textField2.setWidth("min-content");
-        textArea.setLabel("Описание");
-        textArea.setWidth("300px");
+        subtitleTest.setLabel("Подзаголовок");
+        layoutRow.setAlignSelf(FlexComponent.Alignment.CENTER, subtitleTest);
+        subtitleTest.setWidth("min-content");
+        text.setLabel("Описание");
+        text.setWidth("300px");
         layoutColumn3.setWidthFull();
         getContent().setFlexGrow(1.0, layoutColumn3);
         layoutColumn3.addClassName(LumoUtility.Gap.SMALL);
@@ -128,8 +138,8 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         getContent().add(layoutColumn2);
         layoutColumn2.add(layoutRow);
         layoutRow.add(titleTest);
-        layoutRow.add(textField2);
-        layoutRow.add(textArea);
+        layoutRow.add(subtitleTest);
+        layoutRow.add(text);
         getContent().add(layoutColumn3);
         layoutColumn3.add(layoutRow2);
         layoutRow2.add(checkbox);
@@ -156,7 +166,7 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         saveButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
-                myTestService.titleSave(testID, titleTest.getValue());
+                myTestService.allInfSave(testID, titleTest.getValue(), subtitleTest.getValue(), text.getValue());
             }
         });
 
