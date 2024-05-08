@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface TestRepository extends CrudRepository<Test, Integer> {
 List<Test> findAll();
+Test findById(int i);
 
 }

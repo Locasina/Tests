@@ -1,9 +1,7 @@
 package com.example.application.data.entity;
 
-import com.example.application.data.repository.AnswerRepository;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -11,7 +9,6 @@ import java.util.List;
 @Entity
 public class Question {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer Id;
     private String text;
 

@@ -1,9 +1,13 @@
 package com.example.application.views;
 
+import com.example.application.data.entity.Question;
 import com.example.application.data.repository.TestRepository;
 import com.example.application.service.MyTestService;
+import com.example.application.service.NewTestService;
 import com.example.application.views.about.AboutView;
+import com.example.application.views.createtest.AdminView;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
@@ -11,6 +15,8 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -18,15 +24,21 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
+import com.vaadin.flow.component.virtuallist.VirtualList;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("ALL")
 @Route(value = "createTest/:testID", layout = MainLayout.class)
@@ -36,16 +48,21 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
     int testID;
     TestRepository testRepository;
     MyTestService myTestService;
+    NewTestService newTestService;
     String title = "";
 
     TextField titleTest;
     TextField subtitleTest;
     TextArea text;
 
+    private VirtualList<Question> qListing;
+    private ListDataProvider<Question> qDataProvider;
+
     @Autowired
-    void setAutowired(TestRepository testRepository, MyTestService myTestService){
+    void setAutowired(TestRepository testRepository, MyTestService myTestService, NewTestService newTestService){
         this.testRepository = testRepository;
         this.myTestService = myTestService;
+        this.newTestService = newTestService;
     }
 
     @Override
@@ -56,6 +73,10 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         titleTest.setValue(title);
         subtitleTest.setValue(myTestService.getSubtitle(testID));
         text.setValue(myTestService.getText(testID));
+
+        qListing = new VirtualList<>();
+        qDataProvider = new ListDataProvider<Question>(
+                new ArrayList<>(myTestService.findAllQ(testID)));
     }
     public CreateTest(){
         VerticalLayout layoutColumn2 = new VerticalLayout();
@@ -163,6 +184,18 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         layoutRow4.add(deleteButton, saveButton);
         layoutRow4.getStyle().set("flex-grow", "1");
 
+        addButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                Map<String, String> param = new HashMap<>();
+                param.put("testID", String.valueOf(testID));
+                param.put("createQ", String.valueOf(myTestService.createQuestion(testID).getId()));
+                getUI().ifPresent(ui ->
+                        ui.navigate(AdminView.class, new RouteParameters(param)));
+            }
+        });
+
+
         saveButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
@@ -207,5 +240,39 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         select.setItems(sampleItems);
         select.setItemLabelGenerator(item -> ((SampleItem) item).label());
         select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
+    }
+    private Component createQComponent(Question question) {
+        TextField tx = new TextField(question.getText());
+        TextField type = new TextField(question.getTypeQ().toString());
+        final Button deleteButton = new Button(
+                VaadinIcon.MINUS_CIRCLE_O.create(), event -> {
+
+            // Ask for confirmation before deleting stuff
+            final ConfirmDialog dialog = new ConfirmDialog(
+                    "Please confirm",
+                    "Are you sure you want to delete the category? Books in this category will not be deleted.",
+                    "Delete", (e) -> {
+//                DataService.get()
+//                        .deleteCategory(category.getId());
+                qDataProvider.getItems().remove(question);
+                qDataProvider.refreshAll();
+                newTestService.deleteAllData(question.getId());
+                Notification.show("Вопрос удалён");
+            });
+
+            dialog.open();
+
+        });
+
+        final BeanValidationBinder<Question> binder = new BeanValidationBinder<>(
+                Question.class);
+        binder.forField(tx).bind("text");
+        binder.forField(type).bind("typeQ");
+        binder.setBean(question);
+        binder.addValueChangeListener(event -> {
+        });
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        final HorizontalLayout layout = new HorizontalLayout(tx, type, deleteButton);
+        return layout;
     }
 }

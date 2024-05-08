@@ -39,6 +39,7 @@ import java.util.ArrayList;
 @Route(value = "createTest/:testID/:createQ", layout = MainLayout.class)
 public class AdminView extends VerticalLayout implements BeforeEnterObserver {
     int questionId;
+    int testID;
 
     public static final String VIEW_NAME = "Admin";
 
@@ -50,9 +51,13 @@ public class AdminView extends VerticalLayout implements BeforeEnterObserver {
     NewTestService newTestService;
     TextField questionField = new TextField();
     TextField textField = new TextField();
+    Button deleteButton = new Button("Удалить вопрос");
+
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         questionId = Integer.parseInt(beforeEnterEvent.getRouteParameters().get("createQ").get());
+        testID = Integer.parseInt(beforeEnterEvent.getRouteParameters().get("testID").get());
+
         questionField.setValue(newTestService.getQuestion(questionId));
         textField.setValue(String.valueOf(questionId));
         categoriesListing = new VirtualList<>();
@@ -81,9 +86,29 @@ public class AdminView extends VerticalLayout implements BeforeEnterObserver {
         Button backButton = new Button("Назад");
         backButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
             getUI().ifPresent(ui ->
-                    ui.navigate(CreateTest.class, new RouteParameters("testID", String.valueOf(questionId))));
+                    ui.navigate(CreateTest.class, new RouteParameters("testID", String.valueOf(testID))));
         });
-        add(backButton);
+        deleteButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                ConfirmDialog dialog = new ConfirmDialog();
+                dialog.setHeader("Удалить \"вопрос\"?");
+                dialog.setText(
+                        "Вы уверены что хотите удалить этот вопрос?");
+                dialog.setCancelable(true);
+                dialog.setCancelText("Отменить");
+                dialog.setConfirmText("Удалить");
+                dialog.setConfirmButtonTheme("error primary");
+                dialog.open();
+                newTestService.deleteAllData(questionId);
+                dialog.addConfirmListener(event -> getUI().ifPresent(ui ->
+                        ui.navigate(CreateTest.class, new RouteParameters("testID", String.valueOf(testID)))));
+            }
+        });
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY,
+                ButtonVariant.LUMO_ERROR);
+        add(backButton, deleteButton);
+
     }
     public AdminView(NewTestService newTestService) {
 

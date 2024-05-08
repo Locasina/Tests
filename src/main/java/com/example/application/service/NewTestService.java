@@ -67,7 +67,6 @@ public class NewTestService {
 
     public List<NewCreateTestData> getNewTestListByQuestionId(Integer id) {
         List<Answer> answers = answerRepository.findByQuestionId(id);
-        System.out.println(answerRepository.findByQuestionId(id));
         List<NewCreateTestData> dataList = new ArrayList();
         for (Answer x:
              answers) {
@@ -78,5 +77,23 @@ public class NewTestService {
     public void deleteData(NewCreateTestData newCreateTestData){
         newCreateTestRepository.delete(newCreateTestData);
         answerRepository.delete(newCreateTestData.getAnswer());
+    }
+
+    public void deleteAllData(int qId){
+        List<Answer> answers = answerRepository.findByQuestionId(qId);
+        List<NewCreateTestData> dataList = new ArrayList();
+        for (Answer x:
+                answers) {
+            dataList.add(newCreateTestRepository.findByAnswerId(x.getId()));
+        }
+        for (NewCreateTestData x:
+             dataList) {
+            newCreateTestRepository.delete(x);
+        }
+        for (Answer x:
+             answers) {
+            answerRepository.delete(x);
+        }
+        questionRepository.delete(questionRepository.findById(qId));
     }
 }

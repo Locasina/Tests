@@ -1,9 +1,11 @@
 package com.example.application.service;
 
 import com.example.application.data.entity.MyTest;
+import com.example.application.data.entity.Question;
 import com.example.application.data.entity.Test;
 import com.example.application.data.entity.User;
 import com.example.application.data.repository.MyTestRepository;
+import com.example.application.data.repository.QuestionRepository;
 import com.example.application.data.repository.TestRepository;
 import com.example.application.security.SecurityService;
 import lombok.AllArgsConstructor;
@@ -17,6 +19,7 @@ public class MyTestService {
     SecurityService securityService;
     MyTestRepository myTestRepository;
     TestRepository testRepository;
+    QuestionRepository questionRepository;
 
     public String getTitle(int i){
         return findById(i).getTest().getTitle();
@@ -59,6 +62,18 @@ public class MyTestService {
     }
     public MyTest findById(int i) {
         return myTestRepository.findById(i);
+    }
+
+    public Question createQuestion(int testId) {
+        Question question = new Question();
+        question.setId((int) (questionRepository.count()+2));
+        question.setTest(testRepository.findById(testId));
+        question.setText("");
+        questionRepository.save(question);
+        return question;
+    }
+    public List<Question> findAllQ(int testID) {
+        return questionRepository.findByTestId(testID);
     }
 
 }
