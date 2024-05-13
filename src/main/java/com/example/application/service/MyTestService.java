@@ -64,8 +64,9 @@ public class MyTestService {
         return myTestRepository.findById(i);
     }
 
-    public Question createQuestion(int testId) {
+    public Question createQuestion(int testId, String str) {
         Question question = new Question();
+        question.setTypeQ(setQ(str));
         question.setId((int) (questionRepository.count()+2));
         question.setTest(testRepository.findById(testId));
         question.setText("");
@@ -74,6 +75,18 @@ public class MyTestService {
     }
     public List<Question> findAllQ(int testID) {
         return questionRepository.findByTestId(testID);
+    }
+
+    private int setQ(String str) {
+        if (str.indexOf("first") != -1)
+            return 1;
+        if (str.indexOf("second") != -1)
+            return 2;
+        if (str.indexOf("third") != -1)
+            return 3;
+        if (str.indexOf("fourth") != -1)
+            return 4;
+        return 0;
     }
 
 }

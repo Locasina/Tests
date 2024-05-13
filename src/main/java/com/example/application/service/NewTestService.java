@@ -57,8 +57,10 @@ public class NewTestService {
             Answer answer = newCreateTestData.getAnswer();
             answer.setText(newCreateTestData.getText());
             newCreateTestData.setAnswer(answer);
-            System.out.println("lol");
         }
+        newCreateTestRepository.save(newCreateTestData);
+    }
+    public void dataUpdate(NewCreateTestData newCreateTestData) {
         newCreateTestRepository.save(newCreateTestData);
     }
     public int getId() {

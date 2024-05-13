@@ -1,6 +1,6 @@
 package com.example.application.views.about;
 
-import com.example.application.views.CreateTest;
+import com.example.application.views.createtest.CreateTest;
 import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;

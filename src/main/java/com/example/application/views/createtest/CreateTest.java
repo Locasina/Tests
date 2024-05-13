@@ -1,11 +1,11 @@
-package com.example.application.views;
+package com.example.application.views.createtest;
 
 import com.example.application.data.entity.Question;
 import com.example.application.data.repository.TestRepository;
 import com.example.application.service.MyTestService;
 import com.example.application.service.NewTestService;
+import com.example.application.views.MainLayout;
 import com.example.application.views.about.AboutView;
-import com.example.application.views.createtest.AdminView;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -27,10 +27,12 @@ import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.component.virtuallist.VirtualList;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteParameters;
+import com.vaadin.flow.theme.lumo.LumoIcon;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +79,36 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         qListing = new VirtualList<>();
         qDataProvider = new ListDataProvider<Question>(
                 new ArrayList<>(myTestService.findAllQ(testID)));
+        qListing.setDataProvider(qDataProvider);
+        qListing.setRenderer(
+                new ComponentRenderer<>(this::createQComponent));
+        getContent().add(qListing);
+        Button saveButton = new Button("Сохранить тест");
+        saveButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                myTestService.allInfSave(testID, titleTest.getValue(), subtitleTest.getValue(), text.getValue());
+            }
+        });
+        Button deleteButton = new Button("Удалить тест");
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY,
+                ButtonVariant.LUMO_ERROR);
+        deleteButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
+            ConfirmDialog dialog = new ConfirmDialog();
+            dialog.setHeader("Удалить \"тест\"?");
+            dialog.setText(
+                    "Вы уверены что хотите удалить этот тест?");
+            dialog.setCancelable(true);
+            dialog.setConfirmText("Delete");
+            dialog.setConfirmButtonTheme("error primary");
+            dialog.open();
+            myTestService.deleteTest(myTestService.findById(testID).getTest(),myTestService.findById(testID));
+            dialog.addConfirmListener(e -> getUI().ifPresent(ui ->
+                    ui.navigate(AboutView.class)));
+        });
+        HorizontalLayout hw = new HorizontalLayout(saveButton, deleteButton);
+        getContent().add(hw);
+
     }
     public CreateTest(){
         VerticalLayout layoutColumn2 = new VerticalLayout();
@@ -176,32 +208,23 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         layoutRow3.getStyle().set("flex-grow", "1");
         layoutRow3.setAlignSelf(FlexComponent.Alignment.END, addButton);
         HorizontalLayout layoutRow4 = new HorizontalLayout();
-        Button deleteButton = new Button("Удалить тест");
-        deleteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY,
-                ButtonVariant.LUMO_ERROR);
-        Button saveButton = new Button("Сохранить тест");
         layoutColumn4.add(layoutRow4);
-        layoutRow4.add(deleteButton, saveButton);
         layoutRow4.getStyle().set("flex-grow", "1");
 
         addButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                System.out.println(select.getValue().toString());
                 Map<String, String> param = new HashMap<>();
                 param.put("testID", String.valueOf(testID));
-                param.put("createQ", String.valueOf(myTestService.createQuestion(testID).getId()));
+                param.put("createQ", String.valueOf(myTestService.createQuestion(testID, select.getValue().toString()).getId()));
                 getUI().ifPresent(ui ->
                         ui.navigate(AdminView.class, new RouteParameters(param)));
             }
         });
 
 
-        saveButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
-            @Override
-            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
-                myTestService.allInfSave(testID, titleTest.getValue(), subtitleTest.getValue(), text.getValue());
-            }
-        });
+
 
         checkbox2.addClickListener((ComponentEventListener<ClickEvent<Checkbox>>) checkboxClickEvent -> {
             if(dateTimePicker.isEnabled()) {
@@ -213,22 +236,11 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
                 dateTimePicker2.setEnabled(true);
             }
         });
-        deleteButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
-            ConfirmDialog dialog = new ConfirmDialog();
-            dialog.setHeader("Удалить \"тест\"?");
-            dialog.setText(
-                    "Вы уверены что хотите удалить этот тест?");
-            dialog.setCancelable(true);
-            dialog.setConfirmText("Delete");
-            dialog.setConfirmButtonTheme("error primary");
-            dialog.open();
-            myTestService.deleteTest(myTestService.findById(testID).getTest(),myTestService.findById(testID));
-            dialog.addConfirmListener(event -> getUI().ifPresent(ui ->
-                    ui.navigate(AboutView.class)));
-        });
+
 
     }
     record SampleItem(String value, String label, Boolean disabled) {
+
     }
 
     private void setSelectSampleData(Select select) {
@@ -240,10 +252,24 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         select.setItems(sampleItems);
         select.setItemLabelGenerator(item -> ((SampleItem) item).label());
         select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
+        select.setValue(sampleItems.get(0));
     }
     private Component createQComponent(Question question) {
-        TextField tx = new TextField(question.getText());
-        TextField type = new TextField(question.getTypeQ().toString());
+        TextField tx = new TextField();
+        tx.setReadOnly(true);
+        tx.setValue(question.getText());
+        Button redactionButton = new Button();
+        redactionButton.setIcon(LumoIcon.EDIT.create());
+        redactionButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                Map<String, String> param = new HashMap<>();
+                param.put("testID", String.valueOf(testID));
+                param.put("createQ", String.valueOf(question.getId()));
+                getUI().ifPresent(ui -> ui.navigate(AdminView.class, new RouteParameters(param)));
+            }
+        });
+//        TextField type = new TextField(question.getTypeQ().toString());
         final Button deleteButton = new Button(
                 VaadinIcon.MINUS_CIRCLE_O.create(), event -> {
 
@@ -267,12 +293,13 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         final BeanValidationBinder<Question> binder = new BeanValidationBinder<>(
                 Question.class);
         binder.forField(tx).bind("text");
-        binder.forField(type).bind("typeQ");
+//        binder.forField(type).bind("typeQ");
         binder.setBean(question);
         binder.addValueChangeListener(event -> {
         });
         deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        final HorizontalLayout layout = new HorizontalLayout(tx, type, deleteButton);
+        final HorizontalLayout layout = new HorizontalLayout(tx,redactionButton, deleteButton);
+        layout.setFlexGrow(1);
         return layout;
     }
 }
