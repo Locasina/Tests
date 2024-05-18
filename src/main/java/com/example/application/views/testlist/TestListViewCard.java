@@ -1,10 +1,7 @@
-package com.example.application.views.imagelist;
+package com.example.application.views.testlist;
 
 import com.example.application.views.tests.Test1;
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.html.ListItem;
-import com.vaadin.flow.component.html.OrderedList;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.*;
@@ -25,9 +22,9 @@ public class TestListViewCard extends ListItem {
         addClassNames(Background.CONTRAST_5, Display.FLEX, FlexDirection.COLUMN, AlignItems.START, Padding.MEDIUM,
                 BorderRadius.LARGE);
 
-        addClickListener(e ->
+        addClickListener(e ->     //todo for redirect to preview
                 getUI().ifPresent(ui ->
-                        ui.navigate(Test1.class, new RouteParameters("testID", String.valueOf(id))))
+                        ui.navigate(PreviewPage.class, new RouteParameters("testID", String.valueOf(id))))
         );
 
         Span header = new Span();

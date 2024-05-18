@@ -3,7 +3,7 @@ package com.example.application.views;
 import com.example.application.security.SecurityService;
 import com.example.application.views.about.AboutView;
 import com.example.application.views.helloworld.HelloWorldView;
-import com.example.application.views.imagelist.TestsListView;
+import com.example.application.views.testlist.TestsListView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;

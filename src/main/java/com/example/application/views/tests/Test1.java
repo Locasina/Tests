@@ -46,6 +46,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     @Autowired
     SecurityService securityService;
     private String option;
+    private String testID;
 
     protected int i;
     private int numberOfQ;
@@ -68,7 +69,7 @@ public class Test1 extends Composite<VerticalLayout> implements BeforeEnterObser
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
 
         i = 1; //number of current question
-        String testID = beforeEnterEvent.getRouteParameters().get("testID").get();
+         testID = beforeEnterEvent.getRouteParameters().get("testID").get();
 
         testData = testService.dataTestCatch(Integer.parseInt(testID));
         numberOfQ = testData.getQuestions().size();
