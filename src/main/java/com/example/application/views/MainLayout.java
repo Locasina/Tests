@@ -33,7 +33,7 @@ public class MainLayout extends AppLayout {
         
         HorizontalLayout header = new HorizontalLayout();
         if (securityService.getAuthenticatedUser() != null) {
-            Button logout = new Button("Logout", click ->
+            Button logout = new Button("Выйти", click ->
                     securityService.logout());
             header.add(logout);
         }
@@ -54,7 +54,7 @@ public class MainLayout extends AppLayout {
     }
 
     private void addDrawerContent() {
-        H1 appName = new H1("My App");
+        H1 appName = new H1("Образовательный сервис");
         appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
         Header header = new Header(appName);
 
@@ -66,9 +66,9 @@ public class MainLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
-        nav.addItem(new SideNavItem("Hello World", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
-        nav.addItem(new SideNavItem("My tests", AboutView.class, LineAwesomeIcon.FILE.create()));
-        nav.addItem(new SideNavItem("Test List", TestsListView.class, LineAwesomeIcon.TH_LIST_SOLID.create()));
+        nav.addItem(new SideNavItem("Результаты", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
+        nav.addItem(new SideNavItem("Мои тесты", AboutView.class, LineAwesomeIcon.FILE.create()));
+        nav.addItem(new SideNavItem("Доступные тесты", TestsListView.class, LineAwesomeIcon.TH_LIST_SOLID.create()));
 
         return nav;
     }

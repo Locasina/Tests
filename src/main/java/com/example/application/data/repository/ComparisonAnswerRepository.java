@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ComparisonAnswerRepository extends CrudRepository<ComparisonAnswer, Integer> {
     List<ComparisonAnswer> findByQuestionId(int id);
+    ComparisonAnswer findTopByOrderByIdDesc();
 //    List<String> findByColumn1(int id);
 }

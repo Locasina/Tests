@@ -9,5 +9,6 @@ public interface QuestionRepository extends CrudRepository<Question, Integer> {
 
     List<Question> findByTestId(int id);
     Question findById(int id);
+    Question findTopByOrderByIdDesc();
 
 }

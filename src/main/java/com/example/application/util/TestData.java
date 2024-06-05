@@ -19,4 +19,16 @@ public class TestData {
     List<List<Answer>> answers;
     Map<Integer, String> chosenOptions;
     List<List<ComparisonAnswer>> compAnswers;
+
+    public Answer getAnswer(Answer a) {
+        for (List<Answer> x:
+             answers) {
+            for (Answer b:
+                 x) {
+                if (b.getId() == a.getId())
+                    return b;
+            }
+        }
+        return null;
+    }
 }

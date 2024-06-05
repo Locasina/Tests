@@ -1,18 +1,18 @@
 package com.example.application.views.createtest;
 
+import com.example.application.data.entity.AvailableTest;
 import com.example.application.data.entity.Question;
+import com.example.application.data.entity.User;
 import com.example.application.data.repository.TestRepository;
 import com.example.application.service.MyTestService;
 import com.example.application.service.NewTestService;
 import com.example.application.views.MainLayout;
 import com.example.application.views.about.AboutView;
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -37,6 +37,8 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +61,15 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
 
     private VirtualList<Question> qListing;
     private ListDataProvider<Question> qDataProvider;
+
+    private VirtualList<User> userListing;
+    private ListDataProvider<User> userDataProvider;
+
+    DateTimePicker dateTimePicker;
+    DateTimePicker dateTimePicker2;
+    TimePicker timePicker;
+    Checkbox checkbox;
+    Checkbox checkbox2;
 
     @Autowired
     void setAutowired(TestRepository testRepository, MyTestService myTestService, NewTestService newTestService){
@@ -83,6 +94,29 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         qListing.setRenderer(
                 new ComponentRenderer<>(this::createQComponent));
         getContent().add(qListing);
+
+        userListing = new VirtualList<>();
+        userDataProvider = new ListDataProvider<User>(
+                new ArrayList<>(myTestService.findAllUserByTestId(testID)));
+        userListing.setDataProvider(userDataProvider);
+        userListing.setRenderer(
+                new ComponentRenderer<>(this::createUserComponent));
+        ComboBox<User> userBox = new ComboBox<>("Пользователи");
+        userBox.setItems(myTestService.findAllUser());
+        Button addUserButton = new Button("Добавить");
+        addUserButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                    if(userBox.getValue()!=null)
+                userDataProvider.getItems().add(userBox.getValue());
+                userDataProvider.refreshAll();
+            }
+        });
+
+        HorizontalLayout horizontalLayout = new HorizontalLayout(userBox, addUserButton);
+        horizontalLayout.setAlignSelf(FlexComponent.Alignment.END, addUserButton);
+        getContent().add(horizontalLayout);
+        getContent().add(userListing);
         Button saveButton = new Button("Сохранить тест");
         saveButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
             @Override
@@ -102,12 +136,62 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
             dialog.setConfirmText("Delete");
             dialog.setConfirmButtonTheme("error primary");
             dialog.open();
+            myTestService.deleteUserTest(myTestService.findAllAUserByTestId(myTestService.findTestByMytestId(testID).getId()));
+            newTestService.deleteAllData(myTestService.getIDQ(testID));
             myTestService.deleteTest(myTestService.findById(testID).getTest(),myTestService.findById(testID));
             dialog.addConfirmListener(e -> getUI().ifPresent(ui ->
                     ui.navigate(AboutView.class)));
         });
-        HorizontalLayout hw = new HorizontalLayout(saveButton, deleteButton);
+
+        Button releaseButton = new Button("Опубликовать тест");
+        releaseButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY,
+                ButtonVariant.LUMO_SUCCESS);
+        releaseButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
+            @Override
+            public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
+                List<AvailableTest> al = myTestService.findAllAUserByTestId(myTestService.findTestByMytestId(testID).getId());
+                myTestService.realiseTest(al);
+            }
+        });
+        HorizontalLayout hw = new HorizontalLayout(saveButton, deleteButton, releaseButton);
         getContent().add(hw);
+        dateTimePicker.setValue(myTestService.getStartDate(testID));
+        dateTimePicker2.setValue(myTestService.getEndDate(testID));
+        timePicker.setValue(myTestService.getTimer(testID));
+        if(timePicker.getValue() == null) {
+            checkbox.setValue(false);
+            timePicker.setEnabled(false);
+        }
+        else {
+            checkbox.setValue(true);
+        }
+        if(dateTimePicker.getValue() == null & dateTimePicker2.getValue()==null) {
+            checkbox2.setValue(false);
+            dateTimePicker.setEnabled(false);
+            dateTimePicker2.setEnabled(false);
+        }
+        else {
+            checkbox2.setValue(true);
+        }
+
+        dateTimePicker2.addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<DateTimePicker, LocalDateTime>>() {
+            @Override
+            public void valueChanged(AbstractField.ComponentValueChangeEvent<DateTimePicker, LocalDateTime> dateTimePickerLocalDateTimeComponentValueChangeEvent) {
+                myTestService.setEndDate(dateTimePicker2.getValue(), testID);
+            }
+        });
+        dateTimePicker.addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<DateTimePicker, LocalDateTime>>() {
+            @Override
+            public void valueChanged(AbstractField.ComponentValueChangeEvent<DateTimePicker, LocalDateTime> dateTimePickerLocalDateTimeComponentValueChangeEvent) {
+                myTestService.setStartDate(dateTimePicker.getValue(), testID);
+            }
+        });
+        timePicker.addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<TimePicker, LocalTime>>() {
+            @Override
+            public void valueChanged(AbstractField.ComponentValueChangeEvent<TimePicker, LocalTime> timePickerLocalTimeComponentValueChangeEvent) {
+                myTestService.setTimer(timePicker.getValue(), testID);
+            }
+        });
 
     }
     public CreateTest(){
@@ -118,11 +202,11 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         text = new TextArea();
         VerticalLayout layoutColumn3 = new VerticalLayout();
         HorizontalLayout layoutRow2 = new HorizontalLayout();
-        Checkbox checkbox = new Checkbox();
-        TimePicker timePicker = new TimePicker();
-        Checkbox checkbox2 = new Checkbox();
-        DateTimePicker dateTimePicker = new DateTimePicker();
-        DateTimePicker dateTimePicker2 = new DateTimePicker();
+        checkbox = new Checkbox();
+        timePicker = new TimePicker();
+        checkbox2 = new Checkbox();
+        dateTimePicker = new DateTimePicker();
+        dateTimePicker2 = new DateTimePicker();
         VerticalLayout layoutColumn4 = new VerticalLayout();
         HorizontalLayout layoutRow3 = new HorizontalLayout();
         Select select = new Select();
@@ -161,14 +245,17 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         layoutRow2.addClassName(LumoUtility.Padding.XSMALL);
         layoutRow2.setWidth("100%");
         layoutRow2.getStyle().set("flex-grow", "1");
-        checkbox.setLabel("Выкл");
-        checkbox.addClickListener((ComponentEventListener<ClickEvent<Checkbox>>) checkboxClickEvent -> timePicker.setEnabled(!timePicker.isEnabled()));
+        checkbox.setLabel("Вкл");
+        checkbox.addClickListener((ComponentEventListener<ClickEvent<Checkbox>>) checkboxClickEvent -> {
+            timePicker.setEnabled(!timePicker.isEnabled());
+            timePicker.setValue(null);
+        });
         layoutRow2.setAlignSelf(FlexComponent.Alignment.CENTER, checkbox);
         checkbox.setWidth("min-content");
         timePicker.setLabel("Time picker");
         layoutRow2.setAlignSelf(FlexComponent.Alignment.START, timePicker);
         timePicker.setWidth("min-content");
-        checkbox2.setLabel("Выкл");
+        checkbox2.setLabel("Вкл");
         layoutRow2.setAlignSelf(FlexComponent.Alignment.CENTER, checkbox2);
         checkbox2.setWidth("min-content");
         dateTimePicker.setLabel("Date time picker");
@@ -214,7 +301,6 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         addButton.addClickListener(new ComponentEventListener<ClickEvent<Button>>() {
             @Override
             public void onComponentEvent(ClickEvent<Button> buttonClickEvent) {
-                System.out.println(select.getValue().toString());
                 Map<String, String> param = new HashMap<>();
                 param.put("testID", String.valueOf(testID));
                 param.put("createQ", String.valueOf(myTestService.createQuestion(testID, select.getValue().toString()).getId()));
@@ -224,12 +310,12 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         });
 
 
-
-
         checkbox2.addClickListener((ComponentEventListener<ClickEvent<Checkbox>>) checkboxClickEvent -> {
             if(dateTimePicker.isEnabled()) {
                 dateTimePicker.setEnabled(false);
                 dateTimePicker2.setEnabled(false);
+                dateTimePicker.setValue(null);
+                dateTimePicker2.setValue(null);
             }
             else {
                 dateTimePicker.setEnabled(true);
@@ -275,9 +361,9 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
 
             // Ask for confirmation before deleting stuff
             final ConfirmDialog dialog = new ConfirmDialog(
-                    "Please confirm",
-                    "Are you sure you want to delete the category? Books in this category will not be deleted.",
-                    "Delete", (e) -> {
+                    "Подтверждение действия",
+                    "Вы уверенны что хотите удалить этот вопрос?",
+                    "Удалить", (e) -> {
 //                DataService.get()
 //                        .deleteCategory(category.getId());
                 qDataProvider.getItems().remove(question);
@@ -299,6 +385,33 @@ public class CreateTest extends Composite<VerticalLayout> implements BeforeEnter
         });
         deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
         final HorizontalLayout layout = new HorizontalLayout(tx,redactionButton, deleteButton);
+        layout.setFlexGrow(1);
+        return layout;
+    }
+    private Component createUserComponent(User user) {
+        if(!myTestService.checkUser(user, myTestService.findTestByMytestId(testID))) {
+            myTestService.addUserAvailableTest(user, myTestService.findTestByMytestId(testID));
+        }
+        TextField tx = new TextField();
+        tx.setReadOnly(true);
+        tx.setValue(user.getUsername());
+        final Button deleteButton = new Button(
+                VaadinIcon.MINUS_CIRCLE_O.create(), event -> {
+                userDataProvider.getItems().remove(user);
+                userDataProvider.refreshAll();
+                myTestService.removeUserAvailableTest(user, myTestService.findTestByMytestId(testID));
+                Notification.show("Пользователь удалён");
+        });
+
+        final BeanValidationBinder<User> binder = new BeanValidationBinder<>(
+                User.class);
+        binder.forField(tx).bind("username");
+//        binder.forField(type).bind("typeQ");
+        binder.setBean(user);
+        binder.addValueChangeListener(event -> {
+        });
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        final HorizontalLayout layout = new HorizontalLayout(tx, deleteButton);
         layout.setFlexGrow(1);
         return layout;
     }

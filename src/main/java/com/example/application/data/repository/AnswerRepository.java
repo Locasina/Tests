@@ -8,4 +8,5 @@ import java.util.List;
 public interface AnswerRepository extends CrudRepository<Answer, Integer> {
     List<Answer> findByQuestionId(int id);
     List<Answer> findAllByQuestionId(int id);
+    Answer findTopByOrderByIdDesc();
 }

@@ -13,5 +13,8 @@ public class NewCreateTestData {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "answer_id")
     private Answer answer;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "comparisonAnswer_id")
+    private ComparisonAnswer comparisonAnswer;
 
 }

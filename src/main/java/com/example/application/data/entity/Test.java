@@ -1,8 +1,8 @@
 package com.example.application.data.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Data;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Entity
@@ -15,3 +15,4 @@ public class Test {
     private String title;
     private String subtitle;
 }
+

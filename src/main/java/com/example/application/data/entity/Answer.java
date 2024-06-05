@@ -6,24 +6,13 @@ import lombok.Data;
 @Data
 @Entity
 public class Answer {
-
     @Id
     private Integer Id;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id")
     private Question question;
-
-
     private String text;
-
-    @Override
     public String toString(){
         return text;
     }
-
-
-
-
-
 }

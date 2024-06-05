@@ -11,3 +11,10 @@
   background-color: var(--lumo-base-color);
   box-shadow: var(--lumo-box-shadow-s);
 }
+.red-text::part(label) {
+  color: red;
+}
+
+.green-text::part(label) {
+  color: green;
+}

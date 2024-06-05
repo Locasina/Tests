@@ -41,6 +41,7 @@ public class AdminView extends VerticalLayout implements BeforeEnterObserver {
     @Autowired
     NewTestService newTestService;
     TextField questionField = new TextField();
+    TextField answerField = new TextField();
     TextField textField = new TextField();
     Button deleteButton = new Button("Удалить вопрос");
 
@@ -50,16 +51,19 @@ public class AdminView extends VerticalLayout implements BeforeEnterObserver {
         testID = Integer.parseInt(beforeEnterEvent.getRouteParameters().get("testID").get());
 
         questionField.setValue(newTestService.getQuestion(questionId));
+        answerField.setValue(newTestService.getAnswer(questionId));
+
         textField.setValue(String.valueOf(questionId));
         categoriesListing = new VirtualList<>();
         dataProvider = new ListDataProvider<NewCreateTestData>(
                 new ArrayList<>(newTestService.getNewTestListByQuestionId(questionId)));
         categoriesListing.setDataProvider(dataProvider);
-        if (newTestService.getQuestionObject(questionId).getTypeQ() == 1)
-            categoriesListing.setRenderer(new ComponentRenderer<>(this::createCategoryEditor));
         if (newTestService.getQuestionObject(questionId).getTypeQ() == 2)
+            categoriesListing.setRenderer(new ComponentRenderer<>(this::createCategoryEditor));
+        if (newTestService.getQuestionObject(questionId).getTypeQ() == 1)
             categoriesListing.setRenderer(new ComponentRenderer<>(this::createCategoryEditorType2));
-
+        if (newTestService.getQuestionObject(questionId).getTypeQ() == 4)
+            categoriesListing.setRenderer(new ComponentRenderer<>(this::createCategoryEditorType4));
         newCategoryButton = new Button("Добавить вариант ответа", event -> {
             final NewCreateTestData newCreateTestData = new NewCreateTestData();
             dataProvider.getItems().add(newCreateTestData);
@@ -68,9 +72,11 @@ public class AdminView extends VerticalLayout implements BeforeEnterObserver {
         newCategoryButton.setDisableOnClick(true);
 
 
-        add(new H2("Введите вопрос"), questionField, new H4("Добавить вариант ответа"), newCategoryButton);
-        if(newTestService.getQuestionObject(questionId).getTypeQ() == 1 | newTestService.getQuestionObject(questionId).getTypeQ() == 2)
-            add(categoriesListing);
+        add(new H2("Введите вопрос"), questionField);
+        if(newTestService.getQuestionObject(questionId).getTypeQ() == 3)
+            add(new H2("Введите ответ"), answerField);
+        if(newTestService.getQuestionObject(questionId).getTypeQ() != 3 )
+            add(new H4("Добавить вариант ответа"), newCategoryButton, categoriesListing);
 
         questionField.addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<TextField, String>>() {
             @Override
@@ -78,6 +84,14 @@ public class AdminView extends VerticalLayout implements BeforeEnterObserver {
                 newTestService.setQuestion(questionId, questionField.getValue());
             }
         });
+
+        answerField.addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<TextField, String>>() {
+            @Override
+            public void valueChanged(AbstractField.ComponentValueChangeEvent<TextField, String> textFieldStringComponentValueChangeEvent) {
+                newTestService.setAnswer(questionId, answerField.getValue(), newTestService.getQuestionObject(questionId));
+            }
+        });
+
         Button backButton = new Button("Назад");
         backButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
             getUI().ifPresent(ui ->
@@ -211,6 +225,53 @@ public class AdminView extends VerticalLayout implements BeforeEnterObserver {
             }
         });
         final HorizontalLayout layout = new HorizontalLayout(nameField,trueAnswer,
+                deleteButton);
+        layout.setFlexGrow(1);
+        return layout;
+    }
+    private Component createCategoryEditorType4(NewCreateTestData newCreateTestData) {
+        final TextField nameField = new TextField();
+        final TextField secondNameField = new TextField();
+
+        if(newCreateTestData.getId() == null) {
+            newCreateTestData.setId(newTestService.getId());
+        }
+
+        final Button deleteButton = new Button(
+                VaadinIcon.MINUS_CIRCLE_O.create(), event -> {
+            // Ask for confirmation before deleting stuff
+            final ConfirmDialog dialog = new ConfirmDialog(
+                    "Подтверждение",
+                    "Вы уверены что хотите удалить вариант ответа.",
+                    "Удалено", (e) -> {
+                dataProvider.getItems().remove(newCreateTestData);
+                dataProvider.refreshAll();
+                newTestService.deleteData(newCreateTestData);
+                newTestService.deleteCompAnswers(newCreateTestData);
+                newCategoryButton.setEnabled(true);
+                Notification.show("Ответ удалён");
+            });
+
+            dialog.open();
+
+        });
+        deleteButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
+        final BeanValidationBinder<NewCreateTestData> binder = new BeanValidationBinder<>(
+                NewCreateTestData.class);
+        binder.forField(nameField).bind("text");
+        binder.forField(secondNameField).bind("name");
+        binder.setBean(newCreateTestData);
+        binder.addValueChangeListener(event -> {
+            if (binder.isValid()) {
+                deleteButton.setEnabled(true);
+                newCategoryButton.setEnabled(true);
+                newTestService.dataUpdate(newCreateTestData, newTestService.getQuestionObject(questionId));
+                newTestService.compAnsDataUpdate(newCreateTestData, newTestService.getQuestionObject(questionId));
+                Notification.show("Вариант ответа сохранён");
+            }
+        });
+        final HorizontalLayout layout = new HorizontalLayout(nameField,secondNameField,
                 deleteButton);
         layout.setFlexGrow(1);
         return layout;

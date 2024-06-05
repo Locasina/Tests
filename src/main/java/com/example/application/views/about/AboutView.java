@@ -47,7 +47,10 @@ public class AboutView extends Main implements HasComponents, HasStyle, BeforeEn
         plusButton.addClickListener((ComponentEventListener<ClickEvent<Button>>) buttonClickEvent -> {
             Test test = new Test();
             List<Test> tests = testRepository.findAll();
-            test.setId(tests.get(tests.size()-1).getId()+1);
+            if(tests.size() == 0)
+                test.setId(1);
+            else
+                test.setId(tests.get(tests.size()-1).getId()+1);
             test.setText("");
             test.setSubtitle("");
             test.setTitle("");
@@ -86,6 +89,7 @@ public class AboutView extends Main implements HasComponents, HasStyle, BeforeEn
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         testCardContainer.removeAll();
+
         myTestService.getMyTest().forEach(x-> testCardContainer.add(new CreateTestCard(x.getTest().getText(), x.getTest().getTitle(),
                 x.getTest().getSubtitle(),x.getState(), x.getId())));
 

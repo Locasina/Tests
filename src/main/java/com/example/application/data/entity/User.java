@@ -23,8 +23,14 @@ public class User implements UserDetails {
 
     @Id
     private String username;
-    private String password; @Column(name = "account_non_locked")
+    private String password;
+    @Column(name = "account_non_locked")
     private boolean accountNonLocked;
+
+    @Override
+    public String toString() {
+        return username;
+    }
 
     public User() {
     }

@@ -1,0 +1,7 @@
+.red-text::part(label) {
+    color: red;
+}
+
+.green-text::part(label) {
+    color: green;
+}

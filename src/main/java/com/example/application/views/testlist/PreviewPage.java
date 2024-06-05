@@ -1,11 +1,13 @@
 package com.example.application.views.testlist;
 
+import com.example.application.data.entity.User;
+import com.example.application.security.SecurityService;
+import com.example.application.service.MyTestService;
 import com.example.application.views.MainLayout;
 import com.example.application.views.tests.Test1;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -14,11 +16,16 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @PageTitle("My View")
 @Route(value = "Preview/:testID", layout = MainLayout.class)
 @PermitAll
 public class PreviewPage extends Composite<VerticalLayout> implements BeforeEnterObserver {
+    @Autowired
+    MyTestService myTestService;
+    @Autowired
+    SecurityService userSevice;
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
@@ -71,8 +78,12 @@ public class PreviewPage extends Composite<VerticalLayout> implements BeforeEnte
         layoutColumn2.add(buttonPrimary);
 
         buttonPrimary.addClickListener(e ->     //todo for redirect to preview
-                getUI().ifPresent(ui ->
-                        ui.navigate(Test1.class, new RouteParameters("testID", testID)))
+                getUI().ifPresent(ui -> {
+                        myTestService.userStartTest((User)userSevice.getAuthenticatedUser(), myTestService.findTestByMytestId(Integer.parseInt(testID)));
+                        ui.navigate(Test1.class, new RouteParameters("testID", testID));
+
+                }
+                )
         );
     }
 }

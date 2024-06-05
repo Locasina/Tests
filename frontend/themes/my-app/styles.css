@@ -1,9 +1,11 @@
+@import "theme-editor.css";
 @import url('./main-layout.css');
 @import url('./views/image-list-view.css');
+@import url('./views/my-theme.css');
 @import url('./views/gridwith-filters-view.css');    html {
       --lumo-base-color: #f5f7f9;
       --lumo-border-radius-s: calc(var(--lumo-size-m) / 6);
       --lumo-border-radius-m: calc(var(--lumo-size-m) / 2);
       --lumo-border-radius-l: var(--lumo-size-m);
 
-    }
+}
