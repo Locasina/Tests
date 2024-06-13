@@ -45,7 +45,7 @@ public class TestsListView extends Main implements HasComponents, HasStyle , Bef
         container.addClassNames(AlignItems.CENTER, JustifyContent.BETWEEN);
 
         VerticalLayout headerContainer = new VerticalLayout();
-        H2 header = new H2("Available tests");
+        H2 header = new H2("Доступные тесты");
         header.addClassNames(Margin.Bottom.NONE, Margin.Top.XLARGE, FontSize.XXXLARGE);
         headerContainer.add(header);
 

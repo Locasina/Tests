@@ -108,7 +108,14 @@ public class TestService {
 
     public Answer find2Answer(Question question) {
         List<Answer> choose1 = findAllQChoose(question, (User) securityService.getAuthenticatedUser());
-        Choose oldChoose = chooseRepository.findByAnswerAndUser(choose1.get(0), (User) securityService.getAuthenticatedUser());
+        Choose oldChoose;
+        if (choose1.size() == 0) {
+            oldChoose = new Choose();
+            oldChoose.setAnswer(new Answer());
+        }
+        else {
+            oldChoose = chooseRepository.findByAnswerAndUser(choose1.get(0), (User) securityService.getAuthenticatedUser());
+        }
         return oldChoose.getAnswer();
     }
 

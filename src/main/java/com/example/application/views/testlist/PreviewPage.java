@@ -53,21 +53,22 @@ public class PreviewPage extends Composite<VerticalLayout> implements BeforeEnte
         getContent().setFlexGrow(1.0, layoutColumn2);
         layoutColumn2.setWidth("100%");
         layoutColumn2.getStyle().set("flex-grow", "1");
-        h2.setText("Название теста");
+        h2.setText("Тест по бд");
         layoutColumn2.setAlignSelf(FlexComponent.Alignment.CENTER, h2);
         h2.setWidth("max-content");
-        textMedium.setText("Время прохождения теста");
-        textMedium.setWidth("300px");
+        textMedium.setText("Нет ограниячения по времени выполнения");
+        textMedium.setWidth("600px");
         textMedium.getStyle().set("font-size", "var(--lumo-font-size-m)");
-        textMedium2.setText("Тест доступен с Х по Y");
-        textMedium2.setWidth("300px");
+        textMedium2.setText("Не имеет ограничения по сроку прохождения");
+        textMedium2.setWidth("600px");
         textMedium2.setHeight("26px");
         textMedium2.getStyle().set("font-size", "var(--lumo-font-size-m)");
         textMedium3.setText(
-                "После нажатия кнопки \"Начать\" таймер запустится и будет работать в реальном времени. Убедитесь, что вы подготовились к прохождению и уложитесь во временные рамки.");
+                "Этот раздел теста оценивает ваше понимание языка SQL, включая базовые и продвинутые запросы SELECT, INSERT, UPDATE и DELETE.");
         textMedium3.setWidth("100%");
         textMedium3.getStyle().set("font-size", "var(--lumo-font-size-m)");
         buttonPrimary.setText("Начать");
+        getContent().setAlignSelf(Alignment.CENTER, buttonPrimary);
         buttonPrimary.setWidth("min-content");
         buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         getContent().add(layoutColumn2);
